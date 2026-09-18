@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REHMIA - 2026-2027 E-Commerce Visual Brand Book</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400;1,700&display=swap');
+
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+            background-color: #fafaf9;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+        }
+
+        .page {
+            width: 297mm;
+            height: 210mm;
+            page-break-after: always;
+            break-after: page;
+            padding: 24mm 24mm;
+            position: relative;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .page-dark {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            color: #ffffff;
+        }
+
+        .cover-page {
+            padding: 30mm 28mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #0d0d0d;
+            color: #fff;
+        }
+
+        .serif-italic {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+        }
+
+        .brand-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #d4d4d4;
+        }
+
+        .cover-title {
+            font-size: 44px;
+            font-weight: 900;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+        }
+
+        .cover-subtitle {
+            font-size: 18px;
+            font-weight: 300;
+            color: #a3a3a3;
+            letter-spacing: 0.5px;
+        }
+
+        .cover-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 16px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid #111;
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+        }
+
+        .section-tag {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 900;
+            color: #111;
+            margin: 2px 0 0 0;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1.45fr 1fr;
+            gap: 20px;
+            height: calc(100% - 60px);
+            align-items: center;
+        }
+
+        .grid-2-rev {
+            display: grid;
+            grid-template-columns: 1fr 1.45fr;
+            gap: 20px;
+            height: calc(100% - 60px);
+            align-items: center;
+        }
+
+        .screen-frame {
+            background-color: #f5f5f5;
+            border-radius: 12px;
+            border: 1px solid #e5e5e5;
+            overflow: hidden;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .browser-header {
+            background-color: #eaeaea;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .browser-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .browser-url {
+            margin-left: 10px;
+            background: #fff;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 9px;
+            color: #666;
+            font-family: Consolas, monospace;
+            flex-grow: 1;
+        }
+
+        .screen-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        .feature-card {
+            background-color: #fafaf9;
+            border: 1px solid #e7e5e4;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h4 {
+            margin: 0 0 4px 0;
+            font-size: 12px;
+            font-weight: 800;
+            color: #111;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .feature-card p {
+            margin: 0;
+            font-size: 11px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #111;
+            color: #fff;
+            border-radius: 9999px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .color-swatch-box {
+            display: flex;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .color-swatch {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .color-preview {
+            height: 36px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 표지 (Cover Page) -->
+    <div class="page cover-page">
+        <div>
+            <span class="brand-badge">2026-2027 E-COMMERCE VISUAL IDENTITY</span>
+            <div class="cover-title">
+                르미아 <span class="serif-italic" style="font-weight:400; text-transform:none; font-size: 40px; color:#ddd;">(REHMIA)</span><br>
+                DIGITAL FLAGSHIP VISUAL BOOK
+            </div>
+            <div class="cover-subtitle">
+                The Art of Motion & Athletic Living &mdash; 디자인 콘셉트 및 주요 화면 아카이브
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 40px; margin: 30px 0;">
+            <div style="border-left: 2px solid #fff; padding-left: 14px;">
+                <span style="font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1.5px;">Brand Identity</span>
+                <p style="margin:2px 0 0 0; font-size:13px; font-weight:700; color:#fff;">프리미엄 테크니컬 애슬래틱 패션 & 라이프스타일 굿즈</p>
+            </div>
+            <div style="border-left: 2px solid #fff; padding-left: 14px;">
+                <span style="font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1.5px;">Design Trend</span>
+                <p style="margin:2px 0 0 0; font-size:13px; font-weight:700; color:#fff;">2026-2027 미니멀리즘 에디토리얼 & 옵시디언 다크 테마</p>
+            </div>
+            <div style="border-left: 2px solid #fff; padding-left: 14px;">
+                <span style="font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1.5px;">Platform Tech</span>
+                <p style="margin:2px 0 0 0; font-size:13px; font-weight:700; color:#fff;">Spring Boot 3.x / Tailwind CSS v4 / JPA & Querydsl</p>
+            </div>
+        </div>
+
+        <div class="cover-footer">
+            <div>
+                <strong>REHMIA CREATIVE STUDIO</strong> &bull; BRAND EXPERIENCE DESIGN
+            </div>
+            <div>
+                CONFIDENTIAL &bull; 2026. 09
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 브랜드 철학 & 디자인 시스템 (Design System & Philosophy) -->
+    <div class="page">
+        <div class="section-header">
+            <div>
+                <div class="section-tag">01 / DESIGN SYSTEM & PHILOSOPHY</div>
+                <div class="section-title">브랜드 아이덴티티 및 디자인 시스템</div>
+            </div>
+            <div class="badge-pill">CORE IDENTITY</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 10px;">
+            <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 900; margin-top: 0; color: #111;">THE ART OF MOTION & ATHLETIC LIVING</h3>
+                    <p style="font-size: 12px; color: #444; line-height: 1.7;">
+                        <strong>르미아(REHMIA)</strong>는 도심(Urban)과 운동(Active)의 경계를 허무는 2026-2027 하이엔드 액티브웨어 브랜드입니다. 
+                        단순한 상품 나열형 쇼핑몰에서 탈피하여, 마치 현대 미술관이나 글로벌 에디토리얼 매거진을 탐독하는 듯한 깊이 있는 비주얼 경험을 사용자에게 선사합니다.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #888; letter-spacing: 1.5px; margin-bottom: 8px;">COLOR PALETTE</h4>
+                    <div class="color-swatch-box">
+                        <div class="color-swatch">
+                            <div class="color-preview" style="background-color: #121212;"></div>
+                            <strong style="font-size: 11px;">Obsidian Black</strong>
+                            <div style="font-size: 9px; color: #888;">#121212</div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-preview" style="background-color: #fafaf9; border: 1px solid #e0e0e0;"></div>
+                            <strong style="font-size: 11px;">Sand White</strong>
+                            <div style="font-size: 9px; color: #888;">#FAFAF9</div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-preview" style="background-color: #10b981;"></div>
+                            <strong style="font-size: 11px;">Tech Emerald</strong>
+                            <div style="font-size: 9px; color: #888;">#10B981</div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-preview" style="background-color: #f59e0b;"></div>
+                            <strong style="font-size: 11px;">Aero Amber</strong>
+                            <div style="font-size: 9px; color: #888;">#F59E0B</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="feature-card">
+                    <h4>💎 에디토리얼 타이포그래피 (Editorial Typography)</h4>
+                    <p>현대적인 산세리프(Pretendard)의 깔끔한 가독성과 클래식 세리프 이탤릭(Playfair Display)의 우아한 대비를 통해 럭셔리 스포츠웨어의 정체성을 완성했습니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🌌 옵시디언 다크 & 글래스모피즘 (Obsidian & Glassmorphism)</h4>
+                    <p>헤더와 히어로 섹션에 칠흑 같은 흑요석(Obsidian) 블랙과 은은한 반투명 블러(Backdrop Blur) 효과를 적용하여 몰입감 있는 인터페이스를 구축했습니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚡ 마이크로 인터랙션 & 반응형 (Responsive Micro-interactions)</h4>
+                    <p>부드러운 호버 트랜지션, 갤러리 썸네일 실시간 변경, 뷰포트 맞춤형 슬라이더 컨트롤을 통해 극상의 조작감을 제공합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 메인 랜딩 & 히어로 섹션 (Main Landing & Hero) -->
+    <div class="page">
+        <div class="section-header">
+            <div>
+                <div class="section-tag">02 / MAIN FLAGSHIP EXPERIENCE</div>
+                <div class="section-title">메인 랜딩 & 에디토리얼 히어로 슬라이더</div>
+            </div>
+            <div class="badge-pill">HERO UNIVERSE</div>
+        </div>
+
+        <div class="grid-2">
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/</span>
+                </div>
+                <img src="screenshots/01_main_hero.png" alt="메인 히어로 화면" class="screen-img">
+            </div>
+
+            <div>
+                <div class="feature-card">
+                    <h4>✨ 옵시디언 다크 내비게이션 바</h4>
+                    <p>상단 긴급 프로모션 공지 바와 딥 블랙 글래스모피즘 내비게이션으로 럭셔리 브랜드 감성을 전달합니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎯 3단 인터랙티브 배너 슬라이더</h4>
+                    <p>시그니처 액티브웨어, 에어로 아우터, 하이브리드 러닝 기어의 3가지 핵심 라인업을 부드러운 자동 롤링 애니메이션으로 소개합니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🧭 컨테이너 외곽 포지셔닝 화살표</h4>
+                    <p>화살표 컨트롤 버튼을 브라우저 엣지에 정밀 배치하여 타이포그래피 간섭을 완벽히 배제하고 조작성을 극대화했습니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 액티브웨어 컬렉션 & 브랜드 필러 (Product Grid & Pillars) -->
+    <div class="page">
+        <div class="section-header">
+            <div>
+                <div class="section-tag">03 / CURATION & ESSENTIALS</div>
+                <div class="section-title">2026-2027 액티브 컬렉션 그리드 & 브랜드 4대 가치</div>
+            </div>
+            <div class="badge-pill">PRODUCT ARCHIVE</div>
+        </div>
+
+        <div class="grid-2-rev">
+            <div>
+                <div class="feature-card">
+                    <h4>🏛️ 4대 브랜드 핵심 가치 (Brand Pillars)</h4>
+                    <p>• 4-Way 초경량 스트레치<br>• 친환경 리사이클 원사<br>• 전 상품 무료 당일 배송<br>• 100% 안심 무료 교환 케어</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🖼️ 4:5 하이엔드 룩북 비율 카드</h4>
+                    <p>에디토리얼 패션 룩북 비율(4:5)을 적용한 상품 카드에 호버 시 부드러운 줌인 효과와 명확한 가격 표시를 적용했습니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔍 실시간 다이내믹 검색 & 페이징</h4>
+                    <p>키워드 실시간 검색 및 직관적인 미니멀 페이지네이션 바를 통해 방대한 상품도 막힘없이 탐색할 수 있습니다.</p>
+                </div>
+            </div>
+
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/#productList</span>
+                </div>
+                <img src="screenshots/02_active_collection.png" alt="상품 목록 그리드 화면" class="screen-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 상품 상세 & 구매 전환 (Product Detail Experience) -->
+    <div class="page">
+        <div class="section-header">
+            <div>
+                <div class="section-tag">04 / HIGH-CONVERSION PRODUCT DETAIL</div>
+                <div class="section-title">상품 상세 갤러리 & 구매 옵션 컨버전 뷰</div>
+            </div>
+            <div class="badge-pill">PRODUCT DETAIL</div>
+        </div>
+
+        <div class="grid-2">
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/item/1</span>
+                </div>
+                <img src="screenshots/03_item_detail.png" alt="상품 상세 화면" class="screen-img">
+            </div>
+
+            <div>
+                <div class="feature-card">
+                    <h4>📸 동적 멀티 썸네일 갤러리</h4>
+                    <p>하단 썸네일 클릭 시 메인 대표 이미지가 즉각적으로 전환되는 실시간 인터랙티브 갤러리 탑재.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📊 기능성 스펙 & 재고 잔여량 투명 표시</h4>
+                    <p>소재 혼용률, 배송 정책, 실시간 창고 잔여 수량을 뱃지로 제공하여 고객의 구매 결정을 촉진합니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🛒 듀얼 액션 CTA (장바구니 + 바로구매)</h4>
+                    <p>수량 증감 컨트롤러에 연동되어 총 결제 금액이 실시간 계산되며, 장바구니 담기 및 원클릭 즉시 주문을 지원합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. 쇼핑백 & 주문 요약 (Shopping Bag & Checkout) -->
+    <div class="page">
+        <div class="section-header">
+            <div>
+                <div class="section-tag">05 / SEAMLESS CHECKOUT FLOW</div>
+                <div class="section-title">쇼핑백 (장바구니) & 실시간 주문 결제 요약 카드</div>
+            </div>
+            <div class="badge-pill">SHOPPING BAG</div>
+        </div>
+
+        <div class="grid-2-rev">
+            <div>
+                <div class="feature-card">
+                    <h4>☑️ 스마트 체크박스 & 선택 주문</h4>
+                    <p>전체 선택/개별 선택 체크박스를 통해 고객이 원하는 상품만 골라 한 번에 결제할 수 있습니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>💳 스티키(Sticky) 주문 요약 카드</h4>
+                    <p>상품 금액, 무료 배송비 혜택, 회원 등급 할인이 실시간 합산 계산되어 우측 상단에 고정 노출됩니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔄 비동기 AJAX 수량 변경 & 삭제</h4>
+                    <p>새로고침 없는 즉각적인 수량 변경 및 개별/선택 삭제가 가능하여 결제 이탈율을 최소화합니다.</p>
+                </div>
+            </div>
+
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/cart</span>
+                </div>
+                <img src="screenshots/04_shopping_bag.png" alt="장바구니 화면" class="screen-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. 주문 내역 & 마이 스튜디오 (Order History & My Studio) -->
+    <div class="page">
+        <div class="section-header">
+            <div>
+                <div class="section-tag">06 / POST-PURCHASE EXPERIENCE</div>
+                <div class="section-title">주문 내역 타임라인 & 마이 스튜디오 (VIP 계정)</div>
+            </div>
+            <div class="badge-pill">MY ACCOUNT</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: calc(100% - 60px); align-items: center;">
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/orders</span>
+                </div>
+                <img src="screenshots/05_order_history.png" alt="주문 내역 화면" class="screen-img">
+            </div>
+
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/members/mypage</span>
+                </div>
+                <img src="screenshots/10_mypage_studio.png" alt="마이페이지 화면" class="screen-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. 회원 인증 & 보안 (Member Auth & Security) -->
+    <div class="page">
+        <div class="section-header">
+            <div>
+                <div class="section-tag">07 / MEMBER ACCESS & SECURITY</div>
+                <div class="section-title">미니멀 로그인 포털 & VIP 멤버십 회원가입</div>
+            </div>
+            <div class="badge-pill">AUTHENTICATION</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: calc(100% - 60px); align-items: center;">
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/members/login</span>
+                </div>
+                <img src="screenshots/06_login_view.png" alt="로그인 화면" class="screen-img">
+            </div>
+
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/members/new</span>
+                </div>
+                <img src="screenshots/07_member_join.png" alt="회원가입 화면" class="screen-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. 관리자 센터 (Admin Control Center) -->
+    <div class="page">
+        <div class="section-header">
+            <div>
+                <div class="section-tag">08 / ENTERPRISE ADMIN CONTROL</div>
+                <div class="section-title">관리자 상품 등록 (5슬롯) & 다중 필터 상품 관리 그리드</div>
+            </div>
+            <div class="badge-pill">ADMIN CENTER</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: calc(100% - 60px); align-items: center;">
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/admin/item/new</span>
+                </div>
+                <img src="screenshots/08_admin_item_new.png" alt="관리자 상품 등록 화면" class="screen-img">
+            </div>
+
+            <div class="screen-frame">
+                <div class="browser-header">
+                    <span class="browser-dot dot-red"></span>
+                    <span class="browser-dot dot-yellow"></span>
+                    <span class="browser-dot dot-green"></span>
+                    <span class="browser-url">http://localhost:8080/admin/items</span>
+                </div>
+                <img src="screenshots/09_admin_item_mng.png" alt="관리자 상품 관리 화면" class="screen-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. 백커버 (Back Cover) -->
+    <div class="page cover-page" style="text-align: center; justify-content: center; align-items: center;">
+        <span class="brand-badge" style="margin-bottom: 20px;">REHMIA PERFORMANCE STUDIO</span>
+        <div class="cover-title" style="font-size: 38px;">
+            THE ART OF MOTION & ATHLETIC LIVING
+        </div>
+        <p style="color: #888; max-width: 500px; font-size: 13px; line-height: 1.8; margin-bottom: 40px;">
+            도심과 스포츠, 라이프스타일의 조화를 실현하는 차세대 이커머스 플랫폼 르미아.<br>
+            완벽한 기술력과 미니멀리즘 디자인으로 완성된 디지털 플래그십 스토어입니다.
+        </p>
+        <div style="font-size: 11px; color: #555; letter-spacing: 2px;">
+            WWW.REHMIA.COM &bull; ALL RIGHTS RESERVED 2026-2027
+        </div>
+    </div>
+
+</body>
+</html>

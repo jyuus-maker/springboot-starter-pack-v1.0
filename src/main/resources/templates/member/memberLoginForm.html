@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGN IN - REHMIA</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+</head>
+<body class="bg-[#fafaf9] text-neutral-800 flex flex-col min-h-screen antialiased selection:bg-neutral-900 selection:text-white">
+
+    <!-- 헤더 -->
+    <header th:replace="~{fragment/header::headers}"></header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="flex-grow flex items-center justify-center px-4 py-16">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-sm border border-neutral-200/80 p-8 sm:p-10">
+            
+            <!-- 타이틀 헤더 -->
+            <div class="text-center mb-8">
+                <span class="text-xs font-bold tracking-[0.25em] text-neutral-400 uppercase">WELCOME TO REHMIA</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight mt-1 uppercase">SIGN IN</h2>
+                <p class="text-xs text-neutral-500 mt-1 font-light">르미아 회원 계정으로 로그인하세요.</p>
+            </div>
+
+            <!-- SecurityConfig의 failureUrl("/members/login/error")로 들어왔을 때만 보여줄 에러 메시지 -->
+            <div th:if="${loginErrorMsg}" class="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center">
+                <svg class="w-4 h-4 mr-2 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <span th:text="${loginErrorMsg}">로그인 오류</span>
+            </div>
+
+            <form th:action="@{/members/login}" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-1.5">EMAIL ADDRESS</label>
+                    <input type="email" name="email" placeholder="user@rehmia.com" required
+                           class="w-full rounded-xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-900">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-1.5">PASSWORD</label>
+                    <input type="password" name="password" placeholder="비밀번호를 입력하세요" required
+                           class="w-full rounded-xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-900">
+                </div>
+                <div class="pt-2">
+                    <button type="submit"
+                            class="w-full bg-neutral-950 hover:bg-neutral-800 active:bg-black text-white font-bold py-3.5 px-4 rounded-full shadow-md hover:shadow-lg transition cursor-pointer text-xs uppercase tracking-wider">
+                        SIGN IN
+                    </button>
+                </div>
+
+                <!-- CSRF 토큰 -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+
+            <div class="text-center pt-6 mt-6 border-t border-neutral-100">
+                <p class="text-xs text-neutral-500 font-light">
+                    아직 르미아 회원이 아니신가요?
+                    <a th:href="@{/members/new}" class="font-bold text-neutral-900 hover:underline ml-1">JOIN US (회원가입)</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer th:replace="~{fragment/footer::footers}"></footer>
+
+</body>
+</html>

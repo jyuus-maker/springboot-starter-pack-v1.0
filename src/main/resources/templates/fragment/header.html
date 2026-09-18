@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>REHMIA Navigation</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+</head>
+<body>
+<div class="header" th:fragment="headers">
+
+    <!-- 상단 안내 띠 배너 (Editorial Top Bar) -->
+    <div class="bg-[#121212] text-neutral-400 text-[11px] tracking-widest uppercase py-2 px-4 text-center border-b border-neutral-800/80 font-medium">
+        <span>Complimentary Express Shipping on All Orders Over ₩50,000 &bull; REHMIA ATHLETIC 2026</span>
+    </div>
+
+    <!-- 메인 네비게이션 바 -->
+    <nav class="bg-[#171717]/95 backdrop-blur-md text-neutral-100 sticky top-0 z-40 border-b border-neutral-800 transition-all duration-200">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-3 px-4 sm:px-6 lg:px-8 py-3.5">
+
+            <!-- 브랜드 로고 및 메인 메뉴 -->
+            <div class="flex items-center space-x-6 sm:space-x-8">
+                <a class="flex flex-col tracking-tight group" href="/">
+                    <span class="text-xl sm:text-2xl font-black tracking-[0.25em] text-white group-hover:text-neutral-300 transition uppercase">REHMIA</span>
+                    <span class="text-[9px] tracking-[0.35em] text-neutral-400 uppercase -mt-1 font-medium">ATHLETIC &bull; SEOUL</span>
+                </a>
+
+                <div class="hidden lg:flex items-center space-x-1 text-xs font-semibold tracking-wider text-neutral-300 uppercase">
+                    <a href="/" class="px-3 py-2 rounded-md hover:text-white hover:bg-neutral-800/60 transition">COLLECTION</a>
+                    <a sec:authorize="isAuthenticated()" href="/orders" class="px-3 py-2 rounded-md hover:text-white hover:bg-neutral-800/60 transition">ORDERS</a>
+                    <a sec:authorize="isAuthenticated()" href="/cart" class="px-3 py-2 rounded-md hover:text-white hover:bg-neutral-800/60 transition">BAG</a>
+                    <a sec:authorize="hasRole('ADMIN')" href="/admin/item/new" class="px-3 py-2 rounded-md text-amber-400 hover:text-amber-300 hover:bg-neutral-800/60 transition">NEW ITEM</a>
+                    <a sec:authorize="hasRole('ADMIN')" href="/admin/items" class="px-3 py-2 rounded-md text-amber-400 hover:text-amber-300 hover:bg-neutral-800/60 transition">MANAGE</a>
+                </div>
+            </div>
+
+            <!-- 우측 영역: 검색창 & 계정 드롭다운 & 장바구니 -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <!-- 데스크톱 검색 폼 -->
+                <form class="hidden md:flex items-center relative" th:action="@{/}" method="get">
+                    <input name="searchQuery" type="search" placeholder="Search athletic gear..." aria-label="Search"
+                           class="w-48 lg:w-64 rounded-full bg-neutral-800/90 border border-neutral-700/80 px-4 py-1.5 text-xs text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-400 focus:w-72 transition-all duration-300">
+                    <button type="submit" aria-label="Search submit"
+                            class="absolute right-2 text-neutral-400 hover:text-white p-1 transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- 장바구니 아이콘 (인증 사용자 바로가기) -->
+                <a sec:authorize="isAuthenticated()" href="/cart" class="p-2 rounded-full text-neutral-300 hover:text-white hover:bg-neutral-800 transition relative" aria-label="장바구니">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                </a>
+
+                <!-- 계정 드롭다운 메뉴 -->
+                <div class="relative">
+                    <button type="button" id="accountMenuBtn"
+                            class="flex items-center space-x-1 px-3 py-1.5 rounded-full border border-neutral-700 bg-neutral-800/80 hover:bg-neutral-700 text-xs font-medium text-neutral-200 hover:text-white transition focus:outline-none cursor-pointer"
+                            aria-haspopup="true" aria-expanded="false">
+                        <svg class="h-4 w-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="hidden sm:inline tracking-wider uppercase text-[11px]">ACCOUNT</span>
+                    </button>
+
+                    <div id="accountMenu"
+                         class="hidden absolute right-0 mt-2 w-48 bg-[#1f1f1f] text-neutral-200 rounded-xl shadow-2xl py-2 z-50 border border-neutral-700/80 text-xs divide-y divide-neutral-800">
+
+                        <!-- 로그인 상태 메뉴 -->
+                        <div sec:authorize="isAuthenticated()" class="py-1">
+                            <a href="/members/mypage" class="block px-4 py-2 hover:bg-neutral-800 hover:text-white transition">마이페이지 (MY STUDIO)</a>
+                            <a href="/orders" class="block px-4 py-2 hover:bg-neutral-800 hover:text-white transition">주문 및 배송 내역</a>
+                            <a href="/cart" class="block px-4 py-2 hover:bg-neutral-800 hover:text-white transition">장바구니</a>
+                        </div>
+                        <div sec:authorize="hasRole('ADMIN')" class="py-1">
+                            <a href="/admin/item/new" class="block px-4 py-2 text-amber-400 hover:bg-neutral-800 transition">관리자: 상품 등록</a>
+                            <a href="/admin/items" class="block px-4 py-2 text-amber-400 hover:bg-neutral-800 transition">관리자: 상품 관리</a>
+                        </div>
+                        <div sec:authorize="isAuthenticated()" class="py-1">
+                            <form th:action="@{/members/logout}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-red-400 hover:bg-neutral-800 hover:text-red-300 transition bg-transparent border-0 cursor-pointer">
+                                    로그아웃 (LOGOUT)
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- 비로그인 상태 메뉴 -->
+                        <div sec:authorize="isAnonymous()" class="py-1">
+                            <a href="/members/login" class="block px-4 py-2 hover:bg-neutral-800 hover:text-white transition">로그인 (SIGN IN)</a>
+                            <a href="/members/new" class="block px-4 py-2 text-neutral-100 font-semibold hover:bg-neutral-800 transition">회원가입 (JOIN US)</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 모바일 전용 검색창 -->
+            <form class="flex md:hidden items-center w-full mt-2 relative" th:action="@{/}" method="get">
+                <input name="searchQuery" type="search" placeholder="Search athletic gear & apparel..." aria-label="Search"
+                       class="w-full rounded-full bg-neutral-800/90 border border-neutral-700 px-4 py-2 text-xs text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-400">
+                <button type="submit" aria-label="Search submit"
+                        class="absolute right-3 text-neutral-400 hover:text-white p-1 transition cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- 계정 드롭다운 제어 스크립트 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const accountMenuBtn = document.getElementById('accountMenuBtn');
+            const accountMenu = document.getElementById('accountMenu');
+
+            if (accountMenuBtn && accountMenu) {
+                accountMenuBtn.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    accountMenu.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', function (event) {
+                    if (!accountMenu.contains(event.target) && !accountMenuBtn.contains(event.target)) {
+                        accountMenu.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

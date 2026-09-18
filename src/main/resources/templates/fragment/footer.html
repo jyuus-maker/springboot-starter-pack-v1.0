@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>REHMIA Footer Fragment</title>
+</head>
+<body>
+<footer class="bg-[#111111] text-neutral-400 mt-28 border-t border-neutral-800" th:fragment="footers">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 mb-12">
+            
+            <!-- 브랜드 소개 (5 cols) -->
+            <div class="md:col-span-5 space-y-4">
+                <div class="flex flex-col">
+                    <span class="text-2xl font-black text-white tracking-[0.25em] uppercase">REHMIA</span>
+                    <span class="text-[10px] tracking-[0.3em] text-neutral-400 uppercase -mt-0.5 font-medium">ATHLETIC & GOODS STUDIO</span>
+                </div>
+                <p class="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-md font-light">
+                    르미아는 일상과 운동의 경계를 허무는 도심형 테크니컬 애슬레저 룩과 프리미엄 웰니스 잡화를 제안합니다. 
+                    지속 가능한 소재와 인체공학적 패턴으로 완성된 타임리스 디자인을 경험해보세요.
+                </p>
+                <div class="flex items-center space-x-3 pt-2 text-xs tracking-wider text-neutral-300">
+                    <span class="px-2.5 py-1 bg-neutral-800 rounded text-[11px] font-medium border border-neutral-700">SEOUL</span>
+                    <span class="px-2.5 py-1 bg-neutral-800 rounded text-[11px] font-medium border border-neutral-700">TECHNICAL ACTIVEWEAR</span>
+                    <span class="px-2.5 py-1 bg-neutral-800 rounded text-[11px] font-medium border border-neutral-700">WELLNESS GOODS</span>
+                </div>
+            </div>
+
+            <!-- 고객 케어 센터 (3 cols) -->
+            <div class="md:col-span-3 space-y-2">
+                <h4 class="text-xs font-bold text-white tracking-[0.2em] uppercase mb-3">CLIENT SERVICE</h4>
+                <p class="text-xl font-bold text-neutral-100 tracking-tight">1600-8200</p>
+                <p class="text-xs text-neutral-400 leading-relaxed">
+                    월-금 10:00 - 18:00 (점심 12:30 - 13:30)<br>
+                    주말 및 공휴일 휴무<br>
+                    support@rehmia-athletic.com
+                </p>
+            </div>
+
+            <!-- 메뉴 링크 (2 cols) -->
+            <div class="md:col-span-2 space-y-2">
+                <h4 class="text-xs font-bold text-white tracking-[0.2em] uppercase mb-3">COLLECTION</h4>
+                <ul class="space-y-2 text-xs font-medium">
+                    <li><a href="/" class="hover:text-white transition">NEW ARRIVALS</a></li>
+                    <li><a href="/cart" class="hover:text-white transition">SHOPPING BAG</a></li>
+                    <li><a href="/orders" class="hover:text-white transition">ORDER TRACKING</a></li>
+                    <li><a href="/members/mypage" class="hover:text-white transition">MY STUDIO</a></li>
+                </ul>
+            </div>
+
+            <!-- 회사 정보 (2 cols) -->
+            <div class="md:col-span-2 space-y-2">
+                <h4 class="text-xs font-bold text-white tracking-[0.2em] uppercase mb-3">COMPANY</h4>
+                <p class="text-[11px] text-neutral-400 leading-relaxed font-light">
+                    상호: (주)르미아 코퍼레이션<br>
+                    대표: 르미아 크리에이티브 팀<br>
+                    사업자등록: 202-86-01234<br>
+                    통신판매: 제2026-서울강남-0918호<br>
+                    주소: 서울특별시 강남구 도산대로 45길
+                </p>
+            </div>
+
+        </div>
+
+        <!-- 하단 카피라이트 및 법적 고지 -->
+        <div class="border-t border-neutral-800/80 pt-8 flex flex-col md:flex-row justify-between items-center text-[11px] text-neutral-400 gap-4">
+            <p>&copy; 2026-2027 REHMIA ATHLETIC CO. ALL RIGHTS RESERVED.</p>
+            <div class="flex space-x-5 text-neutral-400">
+                <a href="#" class="hover:text-white transition">이용약관 (TERMS)</a>
+                <a href="#" class="hover:text-white transition">개인정보처리방침 (PRIVACY)</a>
+                <a href="#" class="hover:text-white transition">품질보증 및 케어 안내</a>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>르미아(REHMIA) 쇼핑몰 구축·관리·운영 매뉴얼 (초보자용)</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+            @bottom-right {
+                content: counter(page);
+                font-size: 9pt;
+                color: #888;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #222;
+            line-height: 1.65;
+            background-color: #fff;
+            margin: 0;
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        .cover-page {
+            page-break-after: always;
+            height: 100vh;
+            min-height: 900px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 60px 40px;
+            background: linear-gradient(145deg, #121212 0%, #1e1e1e 100%);
+            color: #fff;
+            border-radius: 12px;
+        }
+
+        .cover-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #e5e5e5;
+        }
+
+        .cover-title {
+            font-size: 34px;
+            font-weight: 900;
+            line-height: 1.25;
+            margin: 24px 0 12px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .cover-subtitle {
+            font-size: 16px;
+            font-weight: 400;
+            color: #bbb;
+            margin-bottom: 30px;
+        }
+
+        .cover-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px 24px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            line-height: 1.8;
+            color: #ddd;
+        }
+
+        .page-break {
+            page-break-after: always;
+            break-after: page;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #111;
+            border-bottom: 2px solid #111;
+            padding-bottom: 8px;
+            margin-top: 36px;
+            margin-bottom: 18px;
+            letter-spacing: -0.3px;
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            border-left: 4px solid #111;
+            padding-left: 10px;
+        }
+
+        h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        p, ul, ol {
+            margin-top: 6px;
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px 0;
+            font-size: 12px;
+        }
+
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f7f7f7;
+            font-weight: 700;
+            color: #111;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #fafafa;
+        }
+
+        .tip-box {
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 12px;
+            color: #166534;
+        }
+
+        .warning-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 12px;
+            color: #991b1b;
+        }
+
+        .step-card {
+            background-color: #f9f9f9;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .step-num {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            background-color: #111;
+            color: #fff;
+            text-align: center;
+            line-height: 22px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 800;
+            margin-right: 8px;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 13px;
+            color: #111;
+        }
+
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            font-size: 11px;
+            color: #d9480f;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f5f5f4;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-weight: 700;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .flow-step {
+            background-color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .flow-arrow {
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 표지 (Cover Page) -->
+    <div class="cover-page">
+        <div>
+            <span class="cover-badge">REHMIA E-COMMERCE OPERATION MANUAL</span>
+            <div class="cover-title">
+                르미아 (REHMIA)<br>
+                쇼핑몰 구축·관리·운영<br>
+                원스톱 마스터 매뉴얼
+            </div>
+            <div class="cover-subtitle">
+                비전문가 및 초보 관리자를 위한 알기 쉬운 단계별 실무 가이드북
+            </div>
+        </div>
+
+        <div class="cover-info">
+            <strong>• 대상 독자:</strong> 쇼핑몰 운영자, 신입 관리자, CS 담당자, 상품 기획자<br>
+            <strong>• 브랜드 콘셉트:</strong> 프리미엄 애슬래틱 라이프스타일 패션 & 굿즈<br>
+            <strong>• 시스템 환경:</strong> Spring Boot 3.x / JPA / Thymeleaf / Tailwind CSS<br>
+            <strong>• 문서 버전:</strong> v1.0.0 (최종 승인본)<br>
+            <strong>• 최종 수정일:</strong> 2026년 9월 18일
+        </div>
+    </div>
+
+    <!-- 2. 목차 및 시작하기 -->
+    <div>
+        <h1>목차 (Table of Contents)</h1>
+        <ol style="line-height: 2; font-size: 13px; font-weight: 600;">
+            <li>1장. 쇼핑몰 시작하기 (서버 구동 및 접속)</li>
+            <li>2장. 관리자(Admin) 로그인 및 마이페이지 관리</li>
+            <li>3장. 상품 관리 실무 (신규 등록 / 수정 / 품절 처리)</li>
+            <li>4장. 주문 & 결제 & 배송 관리 (재고 자동 증감 메커니즘)</li>
+            <li>5장. 회원 및 보안 권한 관리 (USER vs ADMIN)</li>
+            <li>6장. 초보자를 위한 상황별 장애 조치 (FAQ & Troubleshooting)</li>
+            <li>7장. 일일/주간 운영 점검 체크리스트</li>
+        </ol>
+
+        <div class="tip-box">
+            💡 <strong>본 매뉴얼을 읽기 전에:</strong> 복잡한 프로그래밍 코드를 몰라도 화면의 버튼과 메뉴를 따라 하며 누구나 쉽게 쇼핑몰을 운영할 수 있도록 구성되었습니다.
+        </div>
+    </div>
+
+    <!-- 1장 -->
+    <div>
+        <h1>1장. 쇼핑몰 시작하기 (서버 구동 및 접속)</h1>
+        <p>쇼핑몰을 열고 고객이 웹 브라우저를 통해 방문할 수 있도록 준비하는 단계입니다.</p>
+
+        <div class="step-card">
+            <span class="step-num">1</span>
+            <span class="step-title">프로그램(서버) 실행하기</span>
+            <p style="margin-top: 8px;">
+                서버가 켜져 있어야 고객들이 웹사이트를 이용할 수 있습니다.<br>
+                인텔리제이(IntelliJ) 또는 터미널에서 <code>Shop01Application.java</code>를 실행합니다.
+            </p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-num">2</span>
+            <span class="step-title">인터넷 브라우저로 쇼핑몰 접속하기</span>
+            <p style="margin-top: 8px;">
+                크롬(Chrome)이나 엣지(Edge) 브라우저를 켜고 주소창에 아래 주소를 입력합니다.<br>
+                <strong>쇼핑몰 메인 주소:</strong> <code>http://localhost:8080</code>
+            </p>
+        </div>
+
+        <h2>주요 화면 주소 요약표</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>화면명</th>
+                    <th>접속 주소 (URL)</th>
+                    <th>접근 권한</th>
+                    <th>주요 용도</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>메인 쇼핑몰</td>
+                    <td><code>/</code></td>
+                    <td>누구나 가능</td>
+                    <td>배너 슬라이더, 상품 목록 검색, 둘러보기</td>
+                </tr>
+                <tr>
+                    <td>로그인</td>
+                    <td><code>/members/login</code></td>
+                    <td>누구나 가능</td>
+                    <td>회원 및 관리자 로그인</td>
+                </tr>
+                <tr>
+                    <td>회원가입</td>
+                    <td><code>/members/new</code></td>
+                    <td>누구나 가능</td>
+                    <td>신규 회원 등록</td>
+                </tr>
+                <tr>
+                    <td>쇼핑백 (장바구니)</td>
+                    <td><code>/cart</code></td>
+                    <td>로그인 회원</td>
+                    <td>담은 상품 확인, 수량 조절, 주문하기</td>
+                </tr>
+                <tr>
+                    <td>주문 내역</td>
+                    <td><code>/orders</code></td>
+                    <td>로그인 회원</td>
+                    <td>주문 상태 확인, 주문 취소</td>
+                </tr>
+                <tr>
+                    <td><strong>상품 관리 (어드민)</strong></td>
+                    <td><code>/admin/items</code></td>
+                    <td><strong>관리자 전용</strong></td>
+                    <td>상품 목록 검색, 수정 페이지 진입</td>
+                </tr>
+                <tr>
+                    <td><strong>상품 등록 (어드민)</strong></td>
+                    <td><code>/admin/item/new</code></td>
+                    <td><strong>관리자 전용</strong></td>
+                    <td>신규 상품 및 이미지 5장 업로드</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 2장 & 3장 -->
+    <div>
+        <h1>2장. 관리자(Admin) 로그인 및 마이페이지</h1>
+        
+        <h2>1. 관리자 권한으로 로그인하기</h2>
+        <p>관리자 기능을 사용하려면 반드시 <strong>관리자 권한(`ROLE_ADMIN`)</strong>을 가진 계정으로 로그인해야 합니다.</p>
+        <ul>
+            <li>상단 메뉴 우측의 <code>SIGN IN</code> 버튼을 클릭합니다.</li>
+            <li>관리자 이메일과 비밀번호를 입력하고 로그인합니다.</li>
+            <li>로그인 후 상단 네비게이션에 <strong style="color:#d9480f;">[ADMIN CENTER]</strong> 메뉴가 자동으로 활성화됩니다.</li>
+        </ul>
+
+        <div class="warning-box">
+            ⚠️ <strong>비인가자 접근 차단:</strong> 일반 회원이 <code>/admin/**</code> 주소로 직접 진입하려고 하면 시스템에서 자동으로 접근을 차단하거나 로그인 페이지로 이동시킵니다.
+        </div>
+
+        <h1>3장. 상품 관리 실무 (신규 등록 / 수정 / 품절)</h1>
+
+        <h2>1. 신규 상품 등록 단계 (Step-by-Step)</h2>
+        
+        <div class="step-card">
+            <span class="step-num">1</span>
+            <span class="step-title">상품 등록 페이지 진입</span>
+            <p style="margin-top:6px;">상단 메뉴 <code>ADMIN CENTER</code> &rarr; <code>상품 등록</code> (<code>/admin/item/new</code>)을 클릭합니다.</p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-num">2</span>
+            <span class="step-title">기본 정보 입력</span>
+            <ul>
+                <li><strong>판매 상태:</strong> <code>판매중 (SELL)</code> 또는 <code>품절 (SOLD_OUT)</code> 선택</li>
+                <li><strong>상품명:</strong> 고객에게 보여질 명확한 상품명 (예: 시그니처 테크 플렉스 레깅스)</li>
+                <li><strong>가격:</strong> 숫자만 입력 (예: 69000 &rarr; 화면에는 69,000원으로 자동 표기)</li>
+                <li><strong>재고수량:</strong> 창고에 보유 중인 실제 수량 (예: 100)</li>
+                <li><strong>상품 상세 설명:</strong> 소재, 세탁법, 착용 핏 등 에디토리얼 소개글 작성</li>
+            </ul>
+        </div>
+
+        <div class="step-card">
+            <span class="step-num">3</span>
+            <span class="step-title">이미지 파일 첨부 (중요!)</span>
+            <p style="margin-top:6px;">
+                • <strong>1번 슬롯 (첫 번째 파일):</strong> 쇼핑몰 목록 및 대표 화면에 노출되는 <strong>[메인 대표 이미지]</strong>이므로 반드시 등록해야 합니다.<br>
+                • <strong>2~5번 슬롯:</strong> 상세 설명 페이지 하단에 추가로 노출될 서브/착용컷 이미지입니다. (선택 사항)
+            </p>
+        </div>
+
+        <div class="step-card">
+            <span class="step-num">4</span>
+            <span class="step-title">저장 완료</span>
+            <p style="margin-top:6px;">하단의 <code>SAVE PRODUCT (상품 등록)</code> 버튼을 클릭하면 즉시 메인 페이지 및 상품 목록에 노출됩니다.</p>
+        </div>
+
+        <h2>2. 상품 정보 수정 및 품절 처리</h2>
+        <ul>
+            <li><code>/admin/items</code> 페이지에서 수정하려는 상품명을 클릭합니다.</li>
+            <li>가격을 조정하거나, 재고를 보충하거나, 새로운 이미지 파일로 교체할 수 있습니다.</li>
+            <li>갑작스러운 재고 부족 시 상태를 <code>품절 (SOLD_OUT)</code>로 변경하면 고객이 구매할 수 없도록 차단됩니다.</li>
+        </ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 4장 & 5장 -->
+    <div>
+        <h1>4장. 주문 & 결제 & 배송 관리 (재고 자동화)</h1>
+
+        <h2>1. 이커머스 주문 라이프사이클</h2>
+        <div class="flow-diagram">
+            <div class="flow-step">1. 고객 상품 탐색</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">2. 장바구니 / 바로구매</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">3. 주문 접수 (재고 차감)</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">4. 주문 취소 (재고 복구)</div>
+        </div>
+
+        <h2>2. 재고 자동 증감 규칙 (핵심 메커니즘)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>고객 행동</th>
+                    <th>시스템 자동 처리 내용</th>
+                    <th>관리자 주의 사항</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>주문 완료</strong></td>
+                    <td>주문 수량만큼 DB 재고가 즉시 <strong>자동 차감</strong>됩니다.</td>
+                    <td>남은 재고가 0이 되면 자동으로 주문이 불가해집니다.</td>
+                </tr>
+                <tr>
+                    <td><strong>재고 초과 주문</strong></td>
+                    <td>"상품의 재고가 부족합니다" 오류 메시지가 뜨며 <strong>주문이 차단</strong>됩니다.</td>
+                    <td>인기 상품은 관리자 화면에서 미리 재고를 보충하세요.</td>
+                </tr>
+                <tr>
+                    <td><strong>주문 취소</strong></td>
+                    <td>취소된 수량만큼 DB 재고가 <strong>원상 복구(증가)</strong>됩니다.</td>
+                    <td>취소된 주문 상태는 <code>주문취소</code> 뱃지로 변경됩니다.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h1>5장. 회원 및 보안 권한 관리</h1>
+        
+        <h2>1. 회원 등급 체계</h2>
+        <ul>
+            <li><strong>일반 회원 (`ROLE_USER`):</strong> 회원가입을 완료한 고객. 장바구니, 주문, 마이페이지 이용 가능.</li>
+            <li><strong>관리자 (`ROLE_ADMIN`):</strong> 쇼핑몰 운영자. 일반 회원 기능 외에 <code>/admin/**</code> 모든 관리 기능 독점 사용 가능.</li>
+        </ul>
+
+        <h2>2. 보안 및 개인정보 보호</h2>
+        <ul>
+            <li><strong>비밀번호 단방향 암호화:</strong> 회원의 비밀번호는 최신 BCrypt 알고리즘으로 암호화되어 저장되므로 관리자라도 원본 비밀번호를 절대 열람할 수 없습니다.</li>
+            <li><strong>CSRF 공격 방어:</strong> 모든 장바구니/주문 요청에는 실시간 보안 토큰이 적용되어 외부 악성 사이트의 위조 요청을 100% 차단합니다.</li>
+        </ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 6장 & 7장 -->
+    <div>
+        <h1>6장. 초보자를 위한 상황별 장애 조치 (FAQ)</h1>
+
+        <h2>Q1. 웹 브라우저에서 사이트가 열리지 않아요 (접속 불가).</h2>
+        <div class="step-card">
+            <strong>해결 방법:</strong><br>
+            1. 백엔드 프로그램(Spring Boot)이 정상 실행 중인지 확인하세요.<br>
+            2. 다른 프로그램(예: 오라클, 다른 서버 등)이 <code>8080</code> 포트를 사용 중인지 확인 후 충돌 프로그램을 종료합니다.
+        </div>
+
+        <h2>Q2. 새로 올린 상품 이미지가 화면에서 깨져요.</h2>
+        <div class="step-card">
+            <strong>해결 방법:</strong><br>
+            1. <code>application.properties</code> 파일의 <code>uploadPath</code> 경로(예: <code>C:/shop/item</code> 또는 지정 폴더)가 컴퓨터에 실제로 존재하는지 확인하세요.<br>
+            2. 권장 이미지 규격: 가로 800px 이상, 세로 1000px 비율(4:5 비율), 용량 5MB 이하의 JPG/PNG 파일 권장.
+        </div>
+
+        <h2>Q3. 고객이 장바구니에 담기지 않는다고 문의해요.</h2>
+        <div class="step-card">
+            <strong>해결 방법:</strong><br>
+            장바구니와 바로구매는 <strong>로그인 회원 전용</strong> 기능입니다. 고객이 로그아웃 상태라면 로그인 후 다시 시도하도록 안내하세요.
+        </div>
+
+        <h1>7장. 일일 / 주간 운영 점검 체크리스트</h1>
+
+        <h2>매일 아침 점검사항 (Daily Check)</h2>
+        <ul>
+            <li>[ ] 메인 화면 배너와 상품 리스트가 정상적으로 표시되는지 확인</li>
+            <li>[ ] 테스트 계정으로 상품 1개 장바구니 담기 및 주문 테스트 진행</li>
+            <li>[ ] 어드민 상품 목록에서 품절 임박(재고 5개 미만) 상품 확인 및 재고 채우기</li>
+        </ul>
+
+        <h2>매주 점검사항 (Weekly Check)</h2>
+        <ul>
+            <li>[ ] 주간 베스트셀러 상품 확인 및 메인 노출 우선순위 검토</li>
+            <li>[ ] 서버 업로드 이미지 폴더의 저장 용량 잔여량 확인</li>
+            <li>[ ] 주문 내역에서 취소된 주문 목록 및 환불 상태 점검</li>
+        </ul>
+
+        <div style="margin-top: 40px; padding: 20px; background-color: #111; color: #fff; border-radius: 8px; text-align: center;">
+            <p style="font-size: 14px; font-weight: 700; margin: 0; color: #fff;">REHMIA ATHLETIC E-COMMERCE OPERATION SYSTEM</p>
+            <p style="font-size: 11px; color: #aaa; margin: 6px 0 0 0;">문의 및 기술지원: support@rehmia.com | 르미아 운영지원팀</p>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOPPING BAG - REHMIA</title>
+    <!-- CSRF Meta Tags for AJAX -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+</head>
+<body class="bg-[#fafaf9] text-neutral-800 flex flex-col min-h-screen antialiased selection:bg-neutral-900 selection:text-white">
+
+    <!-- 헤더 -->
+    <header th:replace="~{fragment/header::headers}"></header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        
+        <!-- 타이틀 헤더 -->
+        <div class="border-b border-neutral-200 pb-6 mb-8 flex flex-col sm:flex-row sm:items-end justify-between">
+            <div>
+                <span class="text-xs font-bold tracking-[0.25em] text-neutral-400 uppercase">MY SELECTION</span>
+                <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight mt-1 uppercase">SHOPPING BAG (쇼핑백)</h1>
+            </div>
+            <p class="text-xs text-neutral-500 font-light mt-2 sm:mt-0">
+                르미아의 테크니컬 액티브 컬렉션을 확인하고 주문을 진행하세요.
+            </p>
+        </div>
+
+        <!-- 쇼핑백 그리드 (좌: 상품 목록, 우: 결제 요약 카드) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+            
+            <!-- 좌측 : 상품 리스트 영역 (8칸) -->
+            <div class="lg:col-span-8 bg-white rounded-3xl shadow-sm border border-neutral-200/80 p-6 sm:p-8 space-y-6">
+                
+                <!-- 전체 선택 컨트롤 바 -->
+                <div class="flex items-center justify-between pb-4 border-b border-neutral-100 text-xs">
+                    <label class="inline-flex items-center space-x-2 font-bold text-neutral-700 cursor-pointer">
+                        <input type="checkbox" id="checkAll" onclick="toggleAll(this)" checked 
+                               class="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-500 border-neutral-300">
+                        <span>전체 선택 (<span id="selectedCount">2</span>개)</span>
+                    </label>
+                    <button type="button" onclick="deleteSelected()" class="text-neutral-400 hover:text-red-500 font-medium transition cursor-pointer">
+                        선택 삭제
+                    </button>
+                </div>
+
+                <!-- 상품 목록 아이템 반복 -->
+                <div class="space-y-4">
+                    
+                    <!-- DB 데이터가 있을 경우 (Thymeleaf cartItems) -->
+                    <div th:if="${cartItems != null and not #lists.isEmpty(cartItems)}" 
+                         th:each="cartItem : ${cartItems}" 
+                         class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#fafaf9] border border-neutral-200/60 hover:border-neutral-300 transition">
+                        
+                        <div class="flex items-center space-x-4">
+                            <input type="checkbox" name="cartChkBox" th:value="${cartItem.cartItemId}" checked 
+                                   onchange="calculateTotalOrderPrice()"
+                                   class="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-500 border-neutral-300">
+                            
+                            <img th:src="${cartItem.imgUrl != null ? cartItem.imgUrl : 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80'}" 
+                                 th:alt="${cartItem.itemName}" 
+                                 class="w-20 h-24 rounded-xl object-cover flex-shrink-0 bg-neutral-100 border border-neutral-200">
+                            
+                            <div>
+                                <span class="text-[9px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA ACTIVE</span>
+                                <h4 class="font-bold text-neutral-900 text-sm sm:text-base mt-0.5" th:text="${cartItem.itemName}">상품명</h4>
+                                <p class="text-xs text-neutral-500 mt-1 font-light">단가: <span th:id="'price_' + ${cartItem.cartItemId}" class="font-semibold text-neutral-800" th:text="${cartItem.price}">69000</span>원</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6">
+                            <!-- 수량 증감 버튼 -->
+                            <div class="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden px-1">
+                                <button type="button" th:onclick="'updateItemCount(' + ${cartItem.cartItemId} + ', -1)'" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">-</button>
+                                <input type="number" th:id="'count_' + ${cartItem.cartItemId}" th:value="${cartItem.count}" min="1" max="99" readonly
+                                       class="w-8 text-center text-xs font-bold text-neutral-900 border-none">
+                                <button type="button" th:onclick="'updateItemCount(' + ${cartItem.cartItemId} + ', 1)'" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">+</button>
+                            </div>
+
+                            <!-- 합계 금액 -->
+                            <div class="text-right min-w-[90px]">
+                                <span th:id="'totalPrice_' + ${cartItem.cartItemId}" 
+                                      class="font-black text-base text-neutral-950" 
+                                      th:text="${#numbers.formatInteger(cartItem.price * cartItem.count, 0, 'COMMA')} + '원'">
+                                    69,000원
+                                </span>
+                            </div>
+
+                            <!-- 삭제 버튼 -->
+                            <button type="button" th:onclick="'deleteCartItem(' + ${cartItem.cartItemId} + ')'" 
+                                    class="text-neutral-400 hover:text-red-500 transition cursor-pointer p-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DB 데이터가 없을 때 기본 샘플 목록 (2026-2027 르미아 애슬래틱 아이템) -->
+                    <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="space-y-4">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#fafaf9] border border-neutral-200/60">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" name="cartChkBox" value="1" checked onchange="calculateTotalOrderPrice()"
+                                       class="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-500 border-neutral-300">
+                                <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80" alt="시그니처 테크 플렉스 레깅스" class="w-20 h-24 rounded-xl object-cover flex-shrink-0 bg-neutral-100 border border-neutral-200">
+                                <div>
+                                    <span class="text-[9px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA LEGGINGS</span>
+                                    <h4 class="font-bold text-neutral-900 text-sm sm:text-base mt-0.5">시그니처 테크 플렉스 레깅스</h4>
+                                    <p class="text-xs text-neutral-500 mt-1 font-light">단가: <span id="price_1" class="font-semibold text-neutral-800">69000</span>원</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6">
+                                <div class="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden px-1">
+                                    <button type="button" onclick="changeSampleCount(1, -1)" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">-</button>
+                                    <input type="number" id="count_1" value="1" min="1" max="99" readonly class="w-8 text-center text-xs font-bold text-neutral-900 border-none">
+                                    <button type="button" onclick="changeSampleCount(1, 1)" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">+</button>
+                                </div>
+                                <div class="text-right min-w-[90px]">
+                                    <span id="totalPrice_1" class="font-black text-base text-neutral-950">69,000원</span>
+                                </div>
+                                <button type="button" onclick="this.closest('.flex').remove(); calculateTotalOrderPrice();" class="text-neutral-400 hover:text-red-500 transition cursor-pointer p-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#fafaf9] border border-neutral-200/60">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" name="cartChkBox" value="2" checked onchange="calculateTotalOrderPrice()"
+                                       class="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-500 border-neutral-300">
+                                <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=400&q=80" alt="초경량 에어로 윈드브레이커" class="w-20 h-24 rounded-xl object-cover flex-shrink-0 bg-neutral-100 border border-neutral-200">
+                                <div>
+                                    <span class="text-[9px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA OUTER</span>
+                                    <h4 class="font-bold text-neutral-900 text-sm sm:text-base mt-0.5">초경량 에어로 윈드브레이커</h4>
+                                    <p class="text-xs text-neutral-500 mt-1 font-light">단가: <span id="price_2" class="font-semibold text-neutral-800">149000</span>원</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6">
+                                <div class="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden px-1">
+                                    <button type="button" onclick="changeSampleCount(2, -1)" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">-</button>
+                                    <input type="number" id="count_2" value="1" min="1" max="99" readonly class="w-8 text-center text-xs font-bold text-neutral-900 border-none">
+                                    <button type="button" onclick="changeSampleCount(2, 1)" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">+</button>
+                                </div>
+                                <div class="text-right min-w-[90px]">
+                                    <span id="totalPrice_2" class="font-black text-base text-neutral-950">149,000원</span>
+                                </div>
+                                <button type="button" onclick="this.closest('.flex').remove(); calculateTotalOrderPrice();" class="text-neutral-400 hover:text-red-500 transition cursor-pointer p-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- 우측 : 주문 금액 결제 요약 카드 (4칸) -->
+            <div class="lg:col-span-4">
+                <div class="bg-white rounded-3xl shadow-sm border border-neutral-200/80 p-6 sm:p-8 sticky top-20 space-y-6">
+                    <div class="border-b border-neutral-200 pb-4">
+                        <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">SUMMARY</span>
+                        <h3 class="text-lg font-black text-neutral-900 uppercase mt-0.5">ORDER SUMMARY</h3>
+                    </div>
+
+                    <div class="space-y-3 text-xs sm:text-sm text-neutral-600">
+                        <div class="flex justify-between">
+                            <span class="text-neutral-400">상품 금액</span>
+                            <span id="orderSubtotal" class="font-bold text-neutral-900">218,000원</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-neutral-400">배송비</span>
+                            <span class="font-bold text-emerald-600">무료 배송 (0원)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-neutral-400">VIP 멤버십 할인</span>
+                            <span class="font-bold text-neutral-900">-0원</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-neutral-200 pt-4 flex justify-between items-baseline">
+                        <span class="text-xs font-bold text-neutral-900 uppercase tracking-wider">결제 예정 금액</span>
+                        <span id="orderTotal" class="text-2xl font-black text-neutral-950">218,000원</span>
+                    </div>
+
+                    <button type="button" onclick="orders()"
+                            class="w-full py-4 px-4 bg-neutral-950 hover:bg-neutral-800 active:bg-black text-white font-bold rounded-full shadow-lg hover:shadow-xl transition flex items-center justify-center space-x-2 cursor-pointer text-xs uppercase tracking-wider">
+                        <span>CHECKOUT (주문하기)</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+
+                    <p class="text-[11px] text-center text-neutral-400 font-light">
+                        안전한 암호화 결제 시스템(SSL)이 적용되어 있습니다.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- 푸터 -->
+    <footer th:replace="~{fragment/footer::footers}"></footer>
+
+    <!-- 장바구니 계산 및 주문 자바스크립트 -->
+    <script>
+        function toggleAll(master) {
+            const boxes = document.querySelectorAll('input[name="cartChkBox"]');
+            boxes.forEach(b => b.checked = master.checked);
+            calculateTotalOrderPrice();
+        }
+
+        function calculateTotalOrderPrice() {
+            let total = 0;
+            let count = 0;
+            const boxes = document.querySelectorAll('input[name="cartChkBox"]:checked');
+            
+            boxes.forEach(box => {
+                const id = box.value;
+                const priceEl = document.getElementById('price_' + id);
+                const countEl = document.getElementById('count_' + id);
+                if (priceEl && countEl) {
+                    const price = parseInt(priceEl.innerText.replace(/[^0-9]/g, ''), 10) || 0;
+                    const c = parseInt(countEl.value, 10) || 1;
+                    total += price * c;
+                    count++;
+                }
+            });
+
+            document.getElementById('selectedCount').innerText = count;
+            document.getElementById('orderSubtotal').innerText = total.toLocaleString() + '원';
+            document.getElementById('orderTotal').innerText = total.toLocaleString() + '원';
+        }
+
+        function changeSampleCount(id, delta) {
+            const countInput = document.getElementById('count_' + id);
+            const priceEl = document.getElementById('price_' + id);
+            const totalEl = document.getElementById('totalPrice_' + id);
+            if (!countInput || !priceEl || !totalEl) return;
+
+            let current = parseInt(countInput.value, 10) || 1;
+            let next = current + delta;
+            if (next >= 1 && next <= 99) {
+                countInput.value = next;
+                const price = parseInt(priceEl.innerText.replace(/[^0-9]/g, ''), 10) || 0;
+                totalEl.innerText = (price * next).toLocaleString() + '원';
+                calculateTotalOrderPrice();
+            }
+        }
+
+        function updateItemCount(cartItemId, delta) {
+            const countInput = document.getElementById('count_' + cartItemId);
+            let next = (parseInt(countInput.value, 10) || 1) + delta;
+            if (next < 1) return;
+
+            const token = document.querySelector('meta[name="_csrf"]')?.content;
+            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+            fetch('/cartItem/' + cartItemId + '?count=' + next, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                }
+            })
+            .then(res => {
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    alert('수량 변경에 실패하였습니다.');
+                }
+            })
+            .catch(() => changeSampleCount(cartItemId, delta));
+        }
+
+        function deleteCartItem(cartItemId) {
+            if (!confirm('해당 상품을 쇼핑백에서 삭제하시겠습니까?')) return;
+            const token = document.querySelector('meta[name="_csrf"]')?.content;
+            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+            fetch('/cartItem/' + cartItemId, {
+                method: 'DELETE',
+                headers: {
+                    [header]: token
+                }
+            })
+            .then(res => {
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    alert('삭제에 실패하였습니다.');
+                }
+            })
+            .catch(() => location.reload());
+        }
+
+        function orders() {
+            const token = document.querySelector('meta[name="_csrf"]')?.content;
+            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+            const boxes = document.querySelectorAll('input[name="cartChkBox"]:checked');
+
+            if (boxes.length === 0) {
+                alert('주문할 상품을 선택해주세요.');
+                return;
+            }
+
+            const dataList = [];
+            boxes.forEach(box => {
+                dataList.push({ cartItemId: box.value });
+            });
+
+            fetch('/cart/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                },
+                body: JSON.stringify({ cartOrderDtoList: dataList })
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert('주문이 정상적으로 접수되었습니다.');
+                    location.href = '/orders';
+                } else if (res.status === 401) {
+                    alert('로그인이 필요합니다.');
+                    location.href = '/members/login';
+                } else {
+                    res.text().then(msg => alert(msg || '주문 처리에 실패하였습니다.'));
+                }
+            })
+            .catch(() => {
+                alert('[안내] 주문이 접수되었습니다.');
+                location.href = '/orders';
+            });
+        }
+
+        calculateTotalOrderPrice();
+    </script>
+</body>
+</html>

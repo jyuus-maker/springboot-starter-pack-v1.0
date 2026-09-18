@@ -1,0 +1,7 @@
+#spring:
+#  application:
+#    name:shop01
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#server:
+#  port: 8090
