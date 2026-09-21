@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REHMIA - 브랜드 스토리 &amp; 2027 비주얼 아카이브</title>
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <!-- Google Fonts & Pretendard -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <style>
+        :root {
+            --obsidian: #0e0e10;
+            --obsidian-surface: #17171a;
+            --sand-white: #fafaf9;
+            --tech-emerald: #10b981;
+            --aero-amber: #f59e0b;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #0c0c0e;
+            color: #f3f3f3;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .font-editorial {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .font-display {
+            font-family: 'Plus Jakarta Sans', 'Pretendard', sans-serif;
+        }
+
+        /* 부드러운 스크롤 애니메이션 최적화 */
+        .parallax-layer {
+            will-change: transform, opacity, letter-spacing;
+            transform-style: preserve-3d;
+        }
+
+        /* 글래스모피즘 & 글로우 효과 */
+        .glass-card {
+            background: rgba(23, 23, 26, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card-hover {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card-hover:hover {
+            transform: translateY(-6px) scale(1.01);
+            background: rgba(30, 30, 36, 0.85);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(16, 185, 129, 0.15);
+        }
+
+        /* 스크롤 연동 자간 애니메이션을 위한 스타일 */
+        .dynamic-tracking {
+            letter-spacing: 0.15em;
+            transition: letter-spacing 0.1s ease-out;
+        }
+
+        /* 2027 섹션 배너 전용 마그네틱 호버 */
+        .banner-glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-glow::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(245, 158, 11, 0.2) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .banner-glow:hover::after {
+            opacity: 1;
+        }
+
+        /* 텍스트 그라디언트 럭셔리 */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #fff 0%, #e2e8f0 40%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-emerald {
+            background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0c0c0e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a30;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #40404a;
+        }
+    </style>
+</head>
+<body class="bg-[#0c0c0e] text-neutral-100 antialiased selection:bg-neutral-100 selection:text-neutral-950 flex flex-col min-h-screen">
+
+    <!-- 상단 스크롤 진행률 게이지 바 (Scroll Progress Indicator) -->
+    <div id="scrollProgressBar" class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-neutral-200 via-amber-300 to-emerald-400 z-50 transition-all duration-75 w-0"></div>
+
+    <!-- 1. 공통 헤더 -->
+    <header th:replace="~{fragment/header::headers}"></header>
+
+    <!-- 플로팅 챕터 퀵 인덱스 네비게이터 (우측 하단) -->
+    <div class="fixed right-6 bottom-8 z-40 hidden xl:flex flex-col items-end space-y-3 pointer-events-none">
+        <div class="glass-card px-4 py-3 rounded-2xl flex flex-col space-y-2 pointer-events-auto shadow-2xl border border-white/10 text-[11px] font-mono uppercase tracking-wider">
+            <span class="text-[9px] text-neutral-500 font-bold tracking-widest">CHAPTER INDEX</span>
+            <a href="#section-hero" class="chapter-link text-neutral-400 hover:text-white transition flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-neutral-600 dot"></span> 00 // ORIGIN
+            </a>
+            <a href="#section-philosophy" class="chapter-link text-neutral-400 hover:text-white transition flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-neutral-600 dot"></span> 01 // PHILOSOPHY
+            </a>
+            <a href="#section-materials" class="chapter-link text-neutral-400 hover:text-white transition flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-neutral-600 dot"></span> 02 // TECH FABRIC
+            </a>
+            <a href="#section-pillars" class="chapter-link text-neutral-400 hover:text-white transition flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-neutral-600 dot"></span> 03 // 4 PILLARS
+            </a>
+            <a href="#section-collection2027" class="chapter-link text-amber-300 hover:text-amber-200 transition flex items-center gap-2 font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 dot animate-ping"></span> 04 // 2027 ARCHIVE
+            </a>
+        </div>
+    </div>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="flex-grow relative">
+
+        <!-- ========================================================================= -->
+        <!-- [SECTION 00] INTRO HERO - 스크롤 연동 자간 조정 & 페이드 트랜지션 -->
+        <!-- ========================================================================= -->
+        <section id="section-hero" class="relative min-h-[90vh] flex flex-col justify-center items-center text-center px-6 py-24 overflow-hidden">
+            <!-- 배경 앰비언트 글로우 -->
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-emerald-950/25 blur-[140px] rounded-full pointer-events-none"></div>
+            <div class="absolute bottom-10 right-1/4 w-[500px] h-[400px] bg-amber-950/20 blur-[130px] rounded-full pointer-events-none"></div>
+
+            <div class="relative z-10 max-w-5xl mx-auto space-y-8">
+                <!-- 브랜드 배지 -->
+                <div class="inline-flex items-center space-x-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/15 backdrop-blur-md shadow-inner">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-[11px] font-mono tracking-[0.3em] uppercase text-neutral-300">2026-2027 REHMIA BRAND ARCHIVE</span>
+                </div>
+
+                <!-- [스크롤 연동 자간 조정 인터랙션 타겟] -->
+                <div class="space-y-4">
+                    <h1 id="heroScrollTitle" class="dynamic-tracking text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase text-white leading-[1.08] tracking-[0.2em] transition-all">
+                        THE ART OF<br>
+                        <span class="font-editorial italic font-normal text-gradient-gold lowercase tracking-normal">motion &amp; living</span>
+                    </h1>
+                    <p id="heroScrollSub" class="text-xs sm:text-sm md:text-base text-neutral-400 max-w-2xl mx-auto font-light leading-relaxed tracking-wider transition-all duration-300">
+                        도심과 운동의 경계를 허무는 하이엔드 테크니컬 애슬레틱 웨어.<br>
+                        완벽한 인체공학적 피팅과 시대를 초월한 미니멀리즘 디자인을 경험하세요.
+                    </p>
+                </div>
+
+                <!-- 인터랙티브 스크롤 안내 화살표 -->
+                <div class="pt-8 flex flex-col items-center space-y-2 opacity-80 hover:opacity-100 transition">
+                    <span class="text-[10px] font-mono tracking-[0.35em] text-neutral-400 uppercase">SCROLL TO DISCOVER</span>
+                    <div class="w-5 h-9 rounded-full border-2 border-neutral-600 flex items-start justify-center p-1">
+                        <div class="w-1.5 h-2.5 bg-amber-400 rounded-full animate-bounce"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- [SECTION 01] 중심축 고정 스케일 애니메이션 (Centered Scale-on-Scroll Canvas) -->
+        <!-- ========================================================================= -->
+        <section id="scaleContainer" class="relative h-[240vh] bg-[#0c0c0e]">
+            <!-- 뷰포트 고정 스티키 래퍼 -->
+            <div class="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+                
+                <!-- 중심축 고정 스케일 타겟 카드 (초기 0.84 -> 스크롤 시 1.0 전면 확장) -->
+                <div id="scaleHeroCard" 
+                     class="relative w-[86vw] h-[82vh] rounded-[32px] overflow-hidden shadow-2xl transition-transform duration-75 ease-out border border-white/10"
+                     style="transform: scale(0.84); transform-origin: center center;">
+                    
+                    <!-- 배경 이미지 & 줌인 패러랙스 레이어 -->
+                    <img id="scaleHeroImg" 
+                         src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=2400&q=85" 
+                         alt="REHMIA Performance Concept" 
+                         class="absolute inset-0 w-full h-full object-cover filter brightness-75 scale-110 transition-transform duration-75 ease-out">
+
+                    <!-- 다크 오버레이 그라디언트 -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0c0c0e] via-[#0c0c0e]/40 to-transparent"></div>
+                    <div class="absolute inset-0 bg-radial from-transparent via-[#0c0c0e]/30 to-[#0c0c0e]/80"></div>
+
+                    <!-- 카드 내부 오버레이 텍스트 (스케일 연동 자간 & 불투명도 조절) -->
+                    <div class="absolute inset-0 flex flex-col justify-end p-8 sm:p-14 lg:p-20 z-10">
+                        <div class="max-w-3xl space-y-4">
+                            <span class="inline-block px-3 py-1 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-mono tracking-widest uppercase">
+                                01 / PHILOSOPHY IN MOTION
+                            </span>
+                            <h2 id="scaleCardTitle" class="text-3xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-[0.15em] leading-tight">
+                                URBAN FORM &amp;<br>
+                                <span class="font-editorial italic font-normal text-emerald-300 lowercase tracking-normal">pure freedom</span>
+                            </h2>
+                            <p class="text-xs sm:text-sm text-neutral-300 font-light leading-relaxed max-w-xl">
+                                르미아(REHMIA)는 도시인의 분주한 일상과 스포츠가 지닌 순수한 해방감 사이의 균형을 탐구합니다.
+                                어떤 환경에서도 몸의 움직임을 방해하지 않는 정밀한 패턴 메이킹으로 새로운 의복의 패러다임을 제안합니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 좌우측 테크니컬 마크 -->
+                    <div class="absolute top-6 left-8 text-[10px] font-mono text-neutral-400 tracking-widest uppercase">
+                        [ REHMIA // SPEC 2026-27 ]
+                    </div>
+                    <div class="absolute top-6 right-8 text-[10px] font-mono text-emerald-400 tracking-widest uppercase flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> SYSTEM ACTIVE
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- [SECTION 02] 3D 패러랙스 브랜드 철학 & 디자인 시스템 (Obsidian System) -->
+        <!-- ========================================================================= -->
+        <section id="section-philosophy" class="relative py-28 px-6 max-w-7xl mx-auto">
+            <!-- 배경 데코 텍스트 -->
+            <div class="absolute -top-10 left-0 text-[120px] sm:text-[180px] font-black text-white/[0.02] tracking-tighter select-none pointer-events-none uppercase font-display">
+                AESTHETICS
+            </div>
+
+            <!-- 섹션 헤더 -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-neutral-800">
+                <div class="space-y-2">
+                    <span class="text-xs font-mono tracking-[0.3em] text-emerald-400 uppercase">DESIGN SYSTEM &amp; PHILOSOPHY</span>
+                    <h2 class="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight">
+                        감각과 기능의 완벽한 일치
+                    </h2>
+                </div>
+                <p class="text-xs sm:text-sm text-neutral-400 max-w-md mt-4 md:mt-0 font-light leading-relaxed">
+                    단순한 의류를 넘어 현대 미술관의 조각품처럼 간결하면서도 극도의 기능성을 담아낸 르미아 디자인 철학
+                </p>
+            </div>
+
+            <!-- 3단 스토리 그리드 (패러랙스 틸트 & 호버 인터랙션) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 카드 1 : 에디토리얼 타이포그래피 -->
+                <div class="glass-card glass-card-hover rounded-3xl p-8 flex flex-col justify-between space-y-8 relative overflow-hidden group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl">
+                            💎
+                        </div>
+                        <span class="text-[10px] font-mono tracking-[0.25em] text-neutral-400 uppercase">EDITORIAL FORM</span>
+                        <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition">
+                            에디토리얼 타이포그래피
+                        </h3>
+                        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                            현대적인 산세리프(Pretendard)의 명료함과 클래식 세리프 이탤릭(Playfair Display)의 우아한 대비로 브랜드의 독창적인 럭셔리 정체성을 구축했습니다.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5 text-[11px] font-mono text-neutral-500">
+                        TYPE // PLAYFAIR &amp; PRETENDARD
+                    </div>
+                </div>
+
+                <!-- 카드 2 : 옵시디언 다크 & 글래스모피즘 -->
+                <div class="glass-card glass-card-hover rounded-3xl p-8 flex flex-col justify-between space-y-8 relative overflow-hidden group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl">
+                            🌌
+                        </div>
+                        <span class="text-[10px] font-mono tracking-[0.25em] text-neutral-400 uppercase">OBSIDIAN UNIVERSE</span>
+                        <h3 class="text-xl font-bold text-white group-hover:text-emerald-300 transition">
+                            흑요석 다크 &amp; 글래스
+                        </h3>
+                        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                            칠흑 같은 심도 깊은 옵시디언 블랙(#0C0C0E)과 부드러운 반투명 블러 레이어를 적용하여 콘텐츠에 시선이 자연스럽게 몰입되도록 유도합니다.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5 text-[11px] font-mono text-neutral-500">
+                        PALETTE // #0C0C0E &bull; #10B981
+                    </div>
+                </div>
+
+                <!-- 카드 3 : 마이크로 인터랙션 -->
+                <div class="glass-card glass-card-hover rounded-3xl p-8 flex flex-col justify-between space-y-8 relative overflow-hidden group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl">
+                            ⚡
+                        </div>
+                        <span class="text-[10px] font-mono tracking-[0.25em] text-neutral-400 uppercase">KINETIC EXPERIENCE</span>
+                        <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition">
+                            초감각 마이크로 인터랙션
+                        </h3>
+                        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                            스크롤 자간 확장, 중심축 고정 스케일, 부드러운 갤러리 썸네일 전환 등 조작하는 매 순간 즉각적이고 생동감 있는 피드백을 전달합니다.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5 text-[11px] font-mono text-neutral-500">
+                        UX // SCROLL-DRIVEN DYNAMICS
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- [SECTION 03] 테크니컬 원단 & 혁신 소재 (Materials & Innovation) -->
+        <!-- ========================================================================= -->
+        <section id="section-materials" class="relative py-28 bg-[#111114] border-y border-neutral-800/80">
+            <div class="max-w-7xl mx-auto px-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- 좌측 텍스트 & 인터랙티브 탭 -->
+                    <div class="lg:col-span-6 space-y-8">
+                        <div class="space-y-3">
+                            <span class="text-xs font-mono tracking-[0.3em] text-amber-400 uppercase">FABRIC ENGINEERING</span>
+                            <h2 class="text-3xl sm:text-5xl font-black text-white uppercase leading-tight">
+                                움직임을 해석하는<br>
+                                <span class="font-editorial italic font-normal text-gradient-gold lowercase tracking-normal">innovative fabric</span>
+                            </h2>
+                            <p class="text-xs sm:text-sm text-neutral-400 font-light leading-relaxed">
+                                극한의 트레이닝부터 편안한 일상까지, 신체의 모든 신장과 수축을 보조하는 르미아만의 독자적인 하이테크 원사 공학입니다.
+                            </p>
+                        </div>
+
+                        <!-- 3가지 원단 스펙 카드 리스트 -->
+                        <div class="space-y-4">
+                            <!-- 소재 1 -->
+                            <div class="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-400 space-y-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="text-sm font-bold text-white">4-Way Hyper Flex™</h4>
+                                    <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded">ELASTICITY 380%</span>
+                                </div>
+                                <p class="text-xs text-neutral-400 font-light">사방 신축성과 무봉제 심리스 가공으로 피부 마찰 0%에 도전하는 초경량 레깅스 원단</p>
+                            </div>
+
+                            <!-- 소재 2 -->
+                            <div class="glass-card p-5 rounded-2xl border-l-4 border-l-amber-400 space-y-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="text-sm font-bold text-white">Aero-Shield Membrane™</h4>
+                                    <span class="text-[10px] font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded">WEIGHT 120g</span>
+                                </div>
+                                <p class="text-xs text-neutral-400 font-light">외부 바람과 수분을 완벽 차단하고 내부 열기만을 배출하는 3-Layer 통기성 아우터 원단</p>
+                            </div>
+
+                            <!-- 소재 3 -->
+                            <div class="glass-card p-5 rounded-2xl border-l-4 border-l-cyan-400 space-y-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="text-sm font-bold text-white">Bio-Recycled Carbon Matrix™</h4>
+                                    <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded">ECO 100% RECYCLED</span>
+                                </div>
+                                <p class="text-xs text-neutral-400 font-light">해양 폐플라스틱을 고밀도로 재가공한 친환경 초강도 리커버리 슈즈 및 가방 원사</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 우측 비주얼 룩북 프레임 (패러랙스 틸트 & 레이어드 이미지) -->
+                    <div class="lg:col-span-6 relative">
+                        <div class="relative mx-auto max-w-md lg:max-w-none">
+                            <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10 group">
+                                <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=1200&q=80" 
+                                     alt="Aero Outer Fabric" 
+                                     class="w-full h-[520px] object-cover group-hover:scale-105 transition-transform duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#0c0c0e] via-transparent to-transparent"></div>
+                                <div class="absolute bottom-6 left-6 right-6 glass-card p-4 rounded-2xl flex items-center justify-between">
+                                    <div>
+                                        <div class="text-[10px] font-mono text-amber-300 uppercase tracking-widest">TESTED IN LAB &amp; STREET</div>
+                                        <div class="text-xs font-bold text-white">Aero Runner 3.0 Performance</div>
+                                    </div>
+                                    <span class="text-[10px] font-mono text-neutral-400 px-2.5 py-1 bg-white/5 rounded-full border border-white/10">ISO 9001</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- [SECTION 04] 브랜드 4대 핵심 가치 (4 Core Brand Pillars) -->
+        <!-- ========================================================================= -->
+        <section id="section-pillars" class="relative py-28 px-6 max-w-7xl mx-auto">
+            <!-- 섹션 헤더 -->
+            <div class="text-center max-w-3xl mx-auto mb-20 space-y-4">
+                <span class="inline-block px-3 py-1 rounded-full bg-white/5 text-emerald-400 border border-emerald-400/20 text-[10px] font-mono tracking-widest uppercase">
+                    03 / CORE PILLARS &amp; PROMISE
+                </span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight">
+                    르미아가 약속하는 4가지 본질
+                </h2>
+                <p class="text-xs sm:text-sm text-neutral-400 font-light leading-relaxed">
+                    디자인, 기능성, 배송, 애프터케어까지 타협하지 않는 르미아의 4대 핵심 고객 가치입니다.
+                </p>
+            </div>
+
+            <!-- 4대 가치 인터랙티브 그리드 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 1. 초경량 스트레치 -->
+                <div class="glass-card glass-card-hover rounded-3xl p-8 flex flex-col justify-between space-y-6 relative group">
+                    <div class="space-y-4">
+                        <span class="text-3xl font-black text-neutral-700 group-hover:text-emerald-400 transition">01</span>
+                        <h3 class="text-lg font-bold text-white group-hover:text-emerald-300 transition">
+                            4-Way 초경량 스트레치
+                        </h3>
+                        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                            극상의 탄성과 빠른 복원력으로 신체의 모든 역동적인 동작을 제약 없이 지지합니다.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-neutral-500">
+                        <span>FABRIC TECH</span>
+                        <span class="text-emerald-400 font-bold">100% PASS</span>
+                    </div>
+                </div>
+
+                <!-- 2. 친환경 리사이클 원사 -->
+                <div class="glass-card glass-card-hover rounded-3xl p-8 flex flex-col justify-between space-y-6 relative group">
+                    <div class="space-y-4">
+                        <span class="text-3xl font-black text-neutral-700 group-hover:text-amber-400 transition">02</span>
+                        <h3 class="text-lg font-bold text-white group-hover:text-amber-300 transition">
+                            친환경 리사이클 원사
+                        </h3>
+                        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                            자연과 공존하는 지속 가능한 웰니스를 위해 고품질 재활용 섬유만을 엄선하여 생산합니다.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-neutral-500">
+                        <span>SUSTAINABLE</span>
+                        <span class="text-amber-400 font-bold">ECO-FRIENDLY</span>
+                    </div>
+                </div>
+
+                <!-- 3. 무료 당일 배송 -->
+                <div class="glass-card glass-card-hover rounded-3xl p-8 flex flex-col justify-between space-y-6 relative group">
+                    <div class="space-y-4">
+                        <span class="text-3xl font-black text-neutral-700 group-hover:text-cyan-400 transition">03</span>
+                        <h3 class="text-lg font-bold text-white group-hover:text-cyan-300 transition">
+                            전 상품 무료 당일 배송
+                        </h3>
+                        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                            14시 이전 결제 건에 대해 당일 전담 특급 배송을 지원하여 기다림 없는 설렘을 전합니다.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-neutral-500">
+                        <span>EXPRESS LOGISTICS</span>
+                        <span class="text-cyan-400 font-bold">SAME DAY</span>
+                    </div>
+                </div>
+
+                <!-- 4. 100% 안심 무료 교환 -->
+                <div class="glass-card glass-card-hover rounded-3xl p-8 flex flex-col justify-between space-y-6 relative group">
+                    <div class="space-y-4">
+                        <span class="text-3xl font-black text-neutral-700 group-hover:text-rose-400 transition">04</span>
+                        <h3 class="text-lg font-bold text-white group-hover:text-rose-300 transition">
+                            100% 안심 무료 교환
+                        </h3>
+                        <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                            사이즈나 핏이 만족스럽지 않으신 경우 조건 없이 1회 무상 맞교환을 책임집니다.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-neutral-500">
+                        <span>REHMIA CARE</span>
+                        <span class="text-rose-400 font-bold">GUARANTEED</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- [SECTION 05] 2027 콜렉션 섹션 배너 (클릭 시 컬렉션 메뉴로 이동) -->
+        <!-- 중심축 고정 스케일 & 패러랙스 인터랙티브 CTA 배너 -->
+        <!-- ========================================================================= -->
+        <section id="section-collection2027" class="relative py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            
+            <div class="text-center mb-10 space-y-2">
+                <span class="text-[11px] font-mono text-amber-400 tracking-[0.35em] uppercase">04 // NEXT ERA</span>
+                <h3 class="text-2xl sm:text-4xl font-black text-white uppercase tracking-tight">2027 NEW ARCHIVE &amp; COLLECTION</h3>
+            </div>
+
+            <!-- 클릭 시 메인 쇼핑몰 컬렉션으로 이동하는 대형 인터랙티브 배너 -->
+            <a href="/#productList" 
+               id="collectionBannerCard"
+               class="banner-glow group relative block w-full rounded-[36px] overflow-hidden border border-amber-400/30 bg-[#141418] shadow-2xl transition-all duration-500 hover:border-amber-400 hover:shadow-[0_0_60px_rgba(245,158,11,0.25)]">
+                
+                <!-- 배경 고화질 룩북 이미지 & 호버 줌 -->
+                <div class="relative h-[480px] sm:h-[580px] w-full overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=2400&q=85" 
+                         alt="2027 REHMIA Active Collection" 
+                         class="w-full h-full object-cover filter brightness-70 group-hover:scale-105 group-hover:brightness-90 transition-all duration-700 ease-out">
+                    
+                    <!-- 시네마틱 섀도우 그라디언트 -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0c0c0e] via-[#0c0c0e]/30 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#0c0c0e]/80 via-transparent to-[#0c0c0e]/80"></div>
+
+                    <!-- 배너 중앙 콘텐츠 오버레이 -->
+                    <div class="absolute inset-0 flex flex-col justify-between p-8 sm:p-14 lg:p-18 z-10">
+                        
+                        <!-- 상단 태그 및 릴리즈 정보 -->
+                        <div class="flex justify-between items-start">
+                            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-black/60 border border-amber-400/40 backdrop-blur-md">
+                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                                <span class="text-[11px] font-mono text-amber-300 tracking-widest uppercase">2027 FLAGSHIP RELEASE</span>
+                            </div>
+                            <span class="text-xs font-mono text-neutral-300 tracking-widest uppercase hidden sm:inline">
+                                CLICK TO ENTER &rarr;
+                            </span>
+                        </div>
+
+                        <!-- 중앙 메인 타이틀 & CTA 버튼 -->
+                        <div class="space-y-6 max-w-2xl">
+                            <div class="space-y-3">
+                                <span class="text-xs sm:text-sm font-mono tracking-[0.3em] text-neutral-300 uppercase">THE NEXT EVOLUTION</span>
+                                <h2 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-[0.1em] leading-tight group-hover:tracking-[0.13em] transition-all duration-300">
+                                    2027 ACTIVE<br>
+                                    <span class="font-editorial italic font-normal text-amber-300 lowercase tracking-normal">collection archive</span>
+                                </h2>
+                                <p class="text-xs sm:text-sm text-neutral-200 font-light leading-relaxed max-w-lg">
+                                    카본 하이브리드 러너, 테크 플렉스 레깅스, 올웨더 유틸리티 기어까지 지금 바로 새로운 컬렉션 전 상품을 만나보세요.
+                                </p>
+                            </div>
+
+                            <!-- 인터랙티브 버튼 UI -->
+                            <div class="pt-2 flex items-center space-x-4">
+                                <span class="inline-flex items-center px-8 py-4 bg-amber-400 group-hover:bg-white text-neutral-950 font-black text-xs uppercase tracking-widest rounded-full shadow-2xl transition-all duration-300 transform group-hover:translate-x-2">
+                                    컬렉션 둘러보기 (ENTER ARCHIVE)
+                                    <svg class="w-4 h-4 ml-2.5 transform group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 하단 메타 바 -->
+                        <div class="flex justify-between items-end pt-6 border-t border-white/10 text-[11px] font-mono text-neutral-400">
+                            <div>SEASON 2026-2027 &bull; WORLDWIDE EXPLORATION</div>
+                            <div class="text-amber-400 font-bold">ALL SIZES IN STOCK</div>
+                        </div>
+
+                    </div>
+                </div>
+            </a>
+
+        </section>
+
+    </main>
+
+    <!-- 6. 공통 푸터 -->
+    <footer th:replace="~{fragment/footer::footers}"></footer>
+
+
+    <!-- ========================================================================= -->
+    <!-- 패러랙스 스크롤링 & 중심축 고정 스케일 & 스크롤 연동 자간 조정 스크립트 -->
+    <!-- ========================================================================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const progressBar = document.getElementById('scrollProgressBar');
+            const heroTitle = document.getElementById('heroScrollTitle');
+            const scaleContainer = document.getElementById('scaleContainer');
+            const scaleHeroCard = document.getElementById('scaleHeroCard');
+            const scaleHeroImg = document.getElementById('scaleHeroImg');
+            const scaleCardTitle = document.getElementById('scaleCardTitle');
+            const collectionBanner = document.getElementById('collectionBannerCard');
+
+            // 1. 스크롤 진행률 게이지 및 스크롤 연동 자간/스케일 계산
+            function onScroll() {
+                const scrollY = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollProgress = docHeight > 0 ? (scrollY / docHeight) : 0;
+
+                // 1) 상단 스크롤 진행바
+                if (progressBar) {
+                    progressBar.style.width = `${scrollProgress * 100}%`;
+                }
+
+                // 2) 히어로 타이틀 스크롤 연동 자간(Letter-spacing) 및 페이드
+                if (heroTitle) {
+                    const heroScrollRatio = Math.min(scrollY / 600, 1);
+                    // 스크롤할수록 자간이 0.15em에서 최대 0.45em까지 역동적으로 확장
+                    const dynamicSpacing = 0.15 + heroScrollRatio * 0.3;
+                    heroTitle.style.letterSpacing = `${dynamicSpacing}em`;
+                    heroTitle.style.opacity = `${1 - heroScrollRatio * 0.4}`;
+                }
+
+                // 3) 중심축 고정 스케일 애니메이션 (Centered Scale-on-Scroll)
+                if (scaleContainer && scaleHeroCard) {
+                    const rect = scaleContainer.getBoundingClientRect();
+                    const containerHeight = scaleContainer.offsetHeight - window.innerHeight;
+                    
+                    // 컨테이너가 뷰포트에 진입했을 때 진행도 (0 ~ 1)
+                    if (rect.top <= 0 && rect.bottom >= window.innerHeight) {
+                        const progress = Math.min(Math.max(-rect.top / containerHeight, 0), 1);
+                        
+                        // 스케일: 0.84 -> 1.0 전면 확장
+                        const scale = 0.84 + progress * 0.16;
+                        // 보더 라디우스: 32px -> 0px
+                        const borderRadius = 32 * (1 - progress);
+                        // 가로 너비: 86vw -> 100vw
+                        const widthVw = 86 + progress * 14;
+                        const heightVh = 82 + progress * 18;
+
+                        scaleHeroCard.style.transform = `scale(${scale})`;
+                        scaleHeroCard.style.borderRadius = `${borderRadius}px`;
+                        scaleHeroCard.style.width = `${widthVw}vw`;
+                        scaleHeroCard.style.height = `${heightVh}vh`;
+
+                        // 내부 이미지 미세 줌인 패러랙스
+                        if (scaleHeroImg) {
+                            const imgScale = 1.1 + progress * 0.15;
+                            scaleHeroImg.style.transform = `scale(${imgScale})`;
+                        }
+
+                        // 내부 텍스트 자간 연동
+                        if (scaleCardTitle) {
+                            scaleCardTitle.style.letterSpacing = `${0.15 + progress * 0.1}em`;
+                        }
+                    } else if (rect.top > 0) {
+                        // 스크롤 상단 위치 시 초기값 복구
+                        scaleHeroCard.style.transform = 'scale(0.84)';
+                        scaleHeroCard.style.borderRadius = '32px';
+                        scaleHeroCard.style.width = '86vw';
+                        scaleHeroCard.style.height = '82vh';
+                    } else if (rect.bottom < window.innerHeight) {
+                        // 스크롤 하단 통과 시 최대값 유지
+                        scaleHeroCard.style.transform = 'scale(1.0)';
+                        scaleHeroCard.style.borderRadius = '0px';
+                        scaleHeroCard.style.width = '100vw';
+                        scaleHeroCard.style.height = '100vh';
+                    }
+                }
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll(); // 초기 1회 실행
+
+            // 2. 2027 섹션 배너 마그네틱 마우스 글로우 인터랙션
+            if (collectionBanner) {
+                collectionBanner.addEventListener('mousemove', function (e) {
+                    const rect = collectionBanner.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    collectionBanner.style.setProperty('--mouse-x', `${x}%`);
+                    collectionBanner.style.setProperty('--mouse-y', `${y}%`);
+                });
+            }
+
+        });
+    </script>
+</body>
+</html>

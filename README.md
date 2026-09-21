@@ -8,7 +8,7 @@
 [![QueryDSL](https://img.shields.io/badge/ORM-QueryDSL%205.1-informational.svg?style=flat-square)](http://querydsl.com/)
 
 > **Spring Boot 기반의 엔터프라이즈급 이커머스(E-Commerce) 풀스택 스타터 팩**  
-> 모던하고 안정적인 백엔드 아키텍처(Spring Data JPA + QueryDSL + Spring Security)와 세련된 반응형 프론트엔드(Thymeleaf + Tailwind CSS)가 결합된 실무형 프로젝트 템플릿입니다.
+> 모던하고 안정적인 백엔드 아키텍처(Spring Data JPA + QueryDSL + Spring Security)와 감각적인 하이엔드 반응형 프론트엔드(Thymeleaf + Tailwind CSS + 패러랙스 인터랙션)가 결합된 실무형 프로젝트 템플릿입니다.
 
 ---
 
@@ -42,7 +42,14 @@
 - 사용자별 독립 장바구니 생성 및 실시간 수량 증감/삭제
 - 비동기(RESTful JSON) 기반 실시간 금액 합산 계산
 
-### 5. 🎨 모던 반응형 UI (Tailwind CSS v4 + Thymeleaf)
+### 5. 🌟 브랜드 스토리 & 하이엔드 패러랙스 인터랙션 (`/story`)
+- **스크롤 연동 자간 조정 (Scroll-driven Letter-spacing):** 스크롤 진행도에 따른 헤드라인 자간 가변 확장
+- **중심축 고정 스케일 애니메이션 (Centered Scale-on-Scroll):** 뷰포트 고정 캔버스가 스크롤에 맞춰 전체 화면으로 유연하게 확대
+- **4대 핵심 가치 & 원단 쇼케이스:** 브랜드 철학과 3대 혁신 원단 스펙 카드
+- **마그네틱 앰비언트 글로우:** 마우스 커서 궤적을 추적하는 동적 조명 효과 및 메인 컬렉션 원클릭 전환
+- **실시간 프로그레스 바 & 5단계 퀵 네비게이터:** 상단 진행률 게이지 및 챕터 점프 네비게이션
+
+### 6. 🎨 모던 반응형 UI (Tailwind CSS v4 + Thymeleaf)
 - 모바일-태블릿-데스크톱 완벽 대응 반응형 그리드 시스템
 - 직관적인 모달, 알림 토스트, 드롭다운 네비게이션 및 세련된 미니멀리즘 디자인
 
@@ -73,8 +80,9 @@ springboot-starter-pack-v1.0/
 ├── src/
 │   ├── main/
 │   │   ├── java/com/example/shop01/
+│   │   │   ├── config/           # SecurityConfig, CustomAuthEntryPoint 등
 │   │   │   ├── constant/         # Enum (ItemSellStatus, OrderStatus, Role 등)
-│   │   │   ├── controller/       # Web & REST Controller
+│   │   │   ├── controller/       # Web & REST Controller (Main, Member, Item, Cart, Order)
 │   │   │   ├── domain/           # JPA Entity (BaseEntity, Member, Item, Cart, Order 등)
 │   │   │   ├── dto/              # Request / Response DTO
 │   │   │   ├── repository/       # Spring Data JPA & QueryDSL Custom Repository
@@ -82,7 +90,13 @@ springboot-starter-pack-v1.0/
 │   │   │   └── Shop01Application.java
 │   │   └── resources/
 │   │       ├── static/           # 컴파일된 CSS (output.css), JS, 아이콘/이미지
-│   │       ├── templates/        # Thymeleaf HTML 뷰 템플릿
+│   │       ├── templates/
+│   │       │   ├── brand/        # 🌟 story.html (브랜드 스토리 패러랙스 뷰)
+│   │       │   ├── fragment/     # header.html, footer.html 등 공통 컴포넌트
+│   │       │   ├── item/         # 상품 등록/수정/상세/관리 템플릿
+│   │       │   ├── cart/         # 장바구니 템플릿
+│   │       │   ├── order/        # 주문 목록 템플릿
+│   │       │   └── member/       # 로그인/회원가입/마이페이지 템플릿
 │   │       └── application.properties # 데이터베이스 및 애플리케이션 환경설정
 │   └── test/                     # 단위 및 통합 테스트 코드
 ├── build.gradle                  # Gradle 의존성 및 빌드 스크립트
@@ -121,12 +135,11 @@ uploadPath=file:///C:/shopmall/
 
 #### 터미널(CLI) 환경
 ```bash
-# 1. Gradle 빌드 및 서버 구동
-./gradlew bootRun
+# 1. (선택 사항) Tailwind CSS 컴파일 빌드
+npm run build
 
-# (선택 사항) Tailwind CSS 실시간 감시 빌드
-npm install
-npm run watch:css
+# 2. Gradle 빌드 및 서버 구동
+./gradlew bootRun
 ```
 
 #### IDE(IntelliJ IDEA) 환경
@@ -141,6 +154,7 @@ npm run watch:css
 | 화면명 | URL 경로 | 접근 권한 | 주요 설명 |
 | :--- | :--- | :---: | :--- |
 | **메인 홈** | `http://localhost:8080/` | 전체 공개 | 메인 비주얼 배너 및 실시간 상품 목록 |
+| **브랜드 스토리** | `/story`, `/brand/story` | 전체 공개 | 르미아 브랜드 철학, 패러랙스 스크롤링, 4대 가치 |
 | **회원가입** | `/members/new` | 전체 공개 | 일반 회원 신규 등록 |
 | **로그인** | `/members/login` | 전체 공개 | 일반 회원 및 관리자 로그인 |
 | **장바구니** | `/cart` | 로그인 회원 | 담긴 상품 확인, 수량 증감, 선택 주문 |

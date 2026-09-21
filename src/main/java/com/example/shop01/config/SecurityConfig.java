@@ -76,6 +76,9 @@ public class SecurityConfig {
                         // 1) 비로그인 사용자 포함, 누구나 접근 가능한 공개 경로 (Permit All)
                         .requestMatchers(
                                 "/",             // 메인 페이지
+                                "/story",        // 브랜드 스토리 페이지
+                                "/story/**",     // 브랜드 스토리 하위 경로
+                                "/brand/**",     // 브랜드 관련 경로
                                 "/members/**",   // 회원가입, 로그인 등 회원 관련 페이지
                                 "/item/**",      // 상품 상세/조회 페이지
                                 "/images/**",    // 상품 이미지 파일

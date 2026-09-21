@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.Optional;
 
 /**
- * [쇼핑몰 메인 화면 컨트롤러 - MainController]
+ * [쇼핑몰 메인 및 브랜드 화면 컨트롤러 - MainController]
  */
 @Controller
 @RequiredArgsConstructor
@@ -43,5 +43,17 @@ public class MainController {
 
         return "index";
     } //end main
+
+    /**
+     * 브랜드 스토리 페이지 매핑
+     * - 르미아(REHMIA) 브랜드 철학, 디자인 시스템, 4대 핵심 가치 및 2027 컬렉션 패러랙스 스크롤링 페이지
+     *
+     * @param model 스프링 UI 모델
+     * @return brand/story.html 브랜드 스토리 템플릿
+     */
+    @GetMapping(value = {"/story", "/brand/story"})
+    public String brandStory(Model model) {
+        return "brand/story";
+    } //end brandStory
 
 } //end class MainController

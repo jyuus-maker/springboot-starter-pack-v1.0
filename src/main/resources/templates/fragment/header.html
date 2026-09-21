@@ -11,7 +11,7 @@
 
     <!-- 상단 안내 띠 배너 (Editorial Top Bar) -->
     <div class="bg-[#121212] text-neutral-400 text-[11px] tracking-widest uppercase py-2 px-4 text-center border-b border-neutral-800/80 font-medium">
-        <span>Complimentary Express Shipping on All Orders Over ₩50,000 &bull; REHMIA ATHLETIC 2026</span>
+        <span>Complimentary Express Shipping on All Orders Over ₩50,000 &bull; REHMIA ATHLETIC 2026-2027</span>
     </div>
 
     <!-- 메인 네비게이션 바 -->
@@ -27,6 +27,10 @@
 
                 <div class="hidden lg:flex items-center space-x-1 text-xs font-semibold tracking-wider text-neutral-300 uppercase">
                     <a href="/" class="px-3 py-2 rounded-md hover:text-white hover:bg-neutral-800/60 transition">COLLECTION</a>
+                    <a href="/story" class="px-3 py-2 rounded-md hover:text-white hover:bg-neutral-800/60 transition text-amber-200/90 hover:text-amber-100 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+                        BRAND STORY
+                    </a>
                     <a sec:authorize="isAuthenticated()" href="/orders" class="px-3 py-2 rounded-md hover:text-white hover:bg-neutral-800/60 transition">ORDERS</a>
                     <a sec:authorize="isAuthenticated()" href="/cart" class="px-3 py-2 rounded-md hover:text-white hover:bg-neutral-800/60 transition">BAG</a>
                     <a sec:authorize="hasRole('ADMIN')" href="/admin/item/new" class="px-3 py-2 rounded-md text-amber-400 hover:text-amber-300 hover:bg-neutral-800/60 transition">NEW ITEM</a>
@@ -47,6 +51,11 @@
                         </svg>
                     </button>
                 </form>
+
+                <!-- 브랜드 스토리 빠른 링크 (모바일/태블릿 포함) -->
+                <a href="/story" class="lg:hidden px-2.5 py-1.5 rounded-full border border-neutral-700 bg-neutral-800/80 text-[11px] font-semibold tracking-wider text-amber-200 hover:text-white transition">
+                    STORY
+                </a>
 
                 <!-- 장바구니 아이콘 (인증 사용자 바로가기) -->
                 <a sec:authorize="isAuthenticated()" href="/cart" class="p-2 rounded-full text-neutral-300 hover:text-white hover:bg-neutral-800 transition relative" aria-label="장바구니">
@@ -69,6 +78,10 @@
 
                     <div id="accountMenu"
                          class="hidden absolute right-0 mt-2 w-48 bg-[#1f1f1f] text-neutral-200 rounded-xl shadow-2xl py-2 z-50 border border-neutral-700/80 text-xs divide-y divide-neutral-800">
+
+                        <div class="py-1">
+                            <a href="/story" class="block px-4 py-2 text-amber-300 hover:bg-neutral-800 hover:text-white transition font-medium">브랜드 스토리 (STORY)</a>
+                        </div>
 
                         <!-- 로그인 상태 메뉴 -->
                         <div sec:authorize="isAuthenticated()" class="py-1">
