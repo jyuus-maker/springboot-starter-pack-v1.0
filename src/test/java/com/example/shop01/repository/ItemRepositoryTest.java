@@ -2,11 +2,12 @@ package com.example.shop01.repository;
 
 import com.example.shop01.constant.ItemSellStatus;
 import com.example.shop01.domain.Item;
-import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,51 +20,57 @@ class ItemRepositoryTest {
     @Autowired
     ItemRepository itemRepository;
 
+    private void createTestItems(String prefix, int count) {
+        for (int i = 1; i <= count; i++) {
+            Item item = new Item();
+            item.setItemName(prefix + " " + i);
+            item.setPrice(10000 + (i * 1000));
+            item.setItemDetail(prefix + " 상세 설명 " + i);
+            item.setItemSellStatus(ItemSellStatus.SELL);
+            item.setStockNumber(100);
+            itemRepository.save(item);
+        }
+    }
+
     @Test
     @DisplayName("상품 10개 저장 테스트")
     public void createItemListTest() {
-        for (int i = 1; i <= 10; i++) {
-            Item item = new Item();
-            item.setItemName("테스트 상품 " + i);
-            item.setPrice(10000 + (i * 1000));
-            item.setItemDetail("테스트 상품 상세 설명입니다. " + i);
-            item.setItemSellStatus(ItemSellStatus.SELL);
-            item.setStockNumber(100);
-
-            Item savedItem = itemRepository.save(item);
-            System.out.println(savedItem.toString());
-        }
-    } //end createItemListTest
+        createTestItems("저장테스트상품", 10);
+        List<Item> items = itemRepository.findByItemName("저장테스트상품 1");
+        assertThat(items).isNotEmpty();
+        assertThat(items.get(0).getItemName()).isEqualTo("저장테스트상품 1");
+    }
 
     @Test
     @DisplayName("상품명 검색 테스트")
     public void findByItemNameTest() {
-        this.createItemListTest();
-        List<Item> itemList = itemRepository.findByItemName("테스트 상품 1");
-        for (Item item : itemList) {
-            System.out.println(item.toString());
-        }
-    } //end findByItemNameTest
+        createTestItems("검색테스트상품", 5);
+        List<Item> itemList = itemRepository.findByItemName("검색테스트상품 1");
+        assertThat(itemList).isNotEmpty();
+        assertThat(itemList.get(0).getItemName()).isEqualTo("검색테스트상품 1");
+    }
 
     @Test
     @DisplayName("가격 이하 검색")
     public void findByPriceLessThanTest() {
-        this.createItemListTest();
+        createTestItems("가격필터상품", 10);
         List<Item> itemList = itemRepository.findByPriceLessThan(15000);
+        assertThat(itemList).isNotEmpty();
         for (Item item : itemList) {
-            System.out.println(item.toString());
+            assertThat(item.getPrice()).isLessThan(15000);
         }
-    } //end findByPriceLessThanTest
+    }
 
     @Test
     @DisplayName("가격 내림차순 검색")
     public void findByPriceLessThanOrderByPriceDescTest() {
-        this.createItemListTest();
+        createTestItems("정렬상품", 10);
         List<Item> itemList = itemRepository.findByPriceLessThanOrderByPriceDesc(15000);
-        for (Item item : itemList) {
-            System.out.println(item.toString());
+        assertThat(itemList).isNotEmpty();
+        for (int i = 0; i < itemList.size() - 1; i++) {
+            assertThat(itemList.get(i).getPrice()).isGreaterThanOrEqualTo(itemList.get(i + 1).getPrice());
         }
-    } //end findByPriceLessThanOrderByPriceDescTest
+    }
 
     @Test
     @DisplayName("기본 단언문(Assertion) Not-Null 검증 테스트")
@@ -73,30 +80,16 @@ class ItemRepositoryTest {
 
         assertThat(name1).isNotNull();
         assertThat(name2).isNotNull();
-    } //end junitTest
+    }
 
     @Test
     @DisplayName("모든 상품 조회")
     void findAllAndItemReturn() {
-        for (int i = 1; i <= 10; i++) {
-            Item item = new Item();
-            item.setItemName("상품 " + i);
-            item.setPrice(10000 + (i * 1000));
-            item.setItemDetail("상품 상세 설명 " + i);
-            item.setItemSellStatus(ItemSellStatus.SELL);
-            item.setStockNumber(100);
-
-            itemRepository.save(item);
-        }
-
+        long beforeCount = itemRepository.count();
+        createTestItems("전체조회상품", 10);
         List<Item> itemList = itemRepository.findAll();
 
         assertThat(itemList).isNotNull();
-        assertThat(itemList).hasSize(10);
-        assertThat(itemList.get(0).getItemName()).isEqualTo("상품 1");
-
-        for (Item item : itemList) {
-            System.out.println(item.toString());
-        }
-    } //end findAllAndItemReturn
+        assertThat(itemList.size()).isEqualTo(beforeCount + 10);
+    }
 }
