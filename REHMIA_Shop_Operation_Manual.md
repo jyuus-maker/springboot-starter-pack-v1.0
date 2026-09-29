@@ -1,7 +1,7 @@
 # 르미아 (REHMIA) 쇼핑몰 구축·관리·운영 마스터 매뉴얼
 
 > **대상 독자:** 비전문가 및 초보 쇼핑몰 운영자, CS 담당자, 상품 관리자  
-> **시스템 환경:** Spring Boot 3.x / JPA / Thymeleaf / Tailwind CSS  
+> **시스템 환경:** Spring Boot 4.0.8 / JPA / Thymeleaf / Tailwind CSS  
 > **문서 버전:** v1.0.0  
 > **작성일자:** 2026-09-18  
 
