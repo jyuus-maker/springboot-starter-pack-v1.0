@@ -4,39 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORDER HISTORY - REHMIA</title>
-    <!-- CSRF Meta Tags for AJAX -->
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
+    <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : ''}">
+    <title>주문 및 구매 내역 (ORDER HISTORY) - REHMIA ATHLETIC</title>
+    <!-- Tailwind CSS 컴파일 빌드된 output.css 연결 -->
     <link rel="stylesheet" th:href="@{/css/output.css}">
 </head>
-<body class="bg-[#fafaf9] text-neutral-800 flex flex-col min-h-screen antialiased selection:bg-neutral-900 selection:text-white">
+<body class="bg-[#fcfbf9] text-neutral-900 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- 헤더 -->
-    <header th:replace="~{fragment/header::headers}"></header>
+    <!-- 상단 글로벌 네비게이션 헤더 -->
+    <div th:replace="~{fragment/header::headers}"></div>
 
-    <!-- 메인 컨텐츠 -->
-    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        
-        <!-- 타이틀 헤더 -->
-        <div class="border-b border-neutral-200 pb-6 mb-8 flex flex-col sm:flex-row sm:items-end justify-between">
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+
+        <!-- 페이지 헤더 -->
+        <div class="mb-10 border-b border-neutral-200 pb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-                <span class="text-xs font-bold tracking-[0.25em] text-neutral-400 uppercase">MY ORDERS</span>
-                <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight mt-1 uppercase">ORDER HISTORY (주문 내역)</h1>
+                <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-neutral-400">PURCHASE ARCHIVE</span>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-neutral-950 uppercase mt-1">ORDER HISTORY</h1>
             </div>
-            <p class="text-xs text-neutral-500 font-light mt-2 sm:mt-0">
-                고객님의 주문 내역 및 배송 상태를 실시간으로 확인하실 수 있습니다.
-            </p>
+            <div class="text-xs text-neutral-500 font-medium">
+                고객님의 모든 주문 내역과 실시간 배송/취소 상태를 확인하실 수 있습니다.
+            </div>
         </div>
 
         <!-- 주문 목록 컨테이너 -->
-        <div class="space-y-6">
+        <div class="space-y-8">
 
-            <!-- 1. DB 주문 데이터가 있을 때 렌더링 -->
+            <!-- 1. DB 주문 데이터가 존재할 때 렌더링 -->
             <div th:if="${orders != null and orders.totalElements > 0}" 
                  th:each="order : ${orders.content}" 
                  class="bg-white rounded-3xl shadow-sm border border-neutral-200/80 p-6 sm:p-8 space-y-6">
-                
+
                 <!-- 주문 메타 헤더 (주문 번호, 일자, 주문 상태, 취소 버튼) -->
                 <div class="flex flex-wrap items-center justify-between border-b border-neutral-200 pb-4 gap-2">
                     <div class="flex items-center space-x-3">
@@ -58,7 +57,7 @@
 
                         <button th:if="${order.orderStatus != null and order.orderStatus.name() == 'ORDER'}" 
                                 type="button" 
-                                th:onclick="'cancelOrder(' + ${order.orderId} + ')'"
+                                th:onclick="'cancelOrder(' + ${order.orderId} + ', this)'"
                                 class="text-xs text-neutral-500 hover:text-red-600 border border-neutral-300 hover:border-red-400 px-3 py-1 rounded-full transition cursor-pointer uppercase tracking-wider">
                             CANCEL ORDER
                         </button>
@@ -69,7 +68,7 @@
                 <div class="space-y-4">
                     <div th:each="orderItem : ${order.orderItemDtoList}" class="flex items-center justify-between p-3 rounded-2xl bg-[#fafaf9] border border-neutral-100">
                         <div class="flex items-center space-x-4">
-                            <img th:src="${orderItem.imgUrl != null ? orderItem.imgUrl : 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80'}" 
+                            <img th:src="${orderItem.imgUrl != null and orderItem.imgUrl != '' ? orderItem.imgUrl : 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80'}" 
                                  th:alt="${orderItem.itemName}" 
                                  class="w-16 h-20 rounded-xl object-cover bg-neutral-100 border border-neutral-200 flex-shrink-0">
                             <div>
@@ -87,6 +86,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <!-- 2. DB 주문 데이터가 없을 때 표시할 기본 샘플 카드 (2026-2027 르미아 애슬래틱 아이템) -->
@@ -129,19 +129,22 @@
                     <div class="flex flex-wrap items-center justify-between border-b border-neutral-200 pb-4 mb-6 gap-2">
                         <div class="flex items-center space-x-3">
                             <span class="text-xs font-bold px-3 py-1 bg-neutral-100 text-neutral-800 rounded-full border border-neutral-200 uppercase tracking-wider">
-                                ORDER #20260916-042
+                                ORDER #20260917-002
                             </span>
-                            <span class="text-xs text-neutral-400 font-light">2026-09-16 16:40</span>
+                            <span class="text-xs text-neutral-400 font-light">2026-09-17 11:45</span>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <span class="text-[11px] font-bold px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full uppercase tracking-wider">배송완료</span>
+                            <span class="text-[11px] font-bold px-3 py-1 bg-neutral-900 text-white rounded-full uppercase tracking-wider">주문완료 (배송준비중)</span>
+                            <button type="button" onclick="cancelSampleOrder(this)" class="text-xs text-neutral-500 hover:text-red-600 border border-neutral-300 hover:border-red-400 px-3 py-1 rounded-full transition cursor-pointer uppercase tracking-wider">
+                                CANCEL ORDER
+                            </button>
                         </div>
                     </div>
 
                     <div class="space-y-4">
                         <div class="flex items-center justify-between p-3 rounded-2xl bg-[#fafaf9] border border-neutral-100">
                             <div class="flex items-center space-x-4">
-                                <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=400&q=80" alt="초경량 에어로 윈드브레이커" class="w-16 h-20 rounded-xl object-cover bg-neutral-100 border border-neutral-200 flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=400&q=80" alt="초경량 에어로 윈드브레이커" class="w-16 h-20 rounded-xl object-cover bg-neutral-100 border border-neutral-200 flex-shrink-0">
                                 <div>
                                     <span class="text-[9px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA OUTERWEAR</span>
                                     <h4 class="font-bold text-neutral-900 text-sm mt-0.5">초경량 에어로 윈드브레이커</h4>
@@ -155,17 +158,19 @@
 
             </div>
 
-            <!-- 3. 페이지네이션 바 -->
-            <div th:if="${orders != null and orders.totalPages > 0}"
+            <!-- 페이징 네비게이션 -->
+            <div th:if="${orders != null and orders.totalPages > 0}" 
                  th:with="start=${(orders.number/maxPage)*maxPage + 1}, end=(${(orders.totalPages == 0) ? 1 : (start + (maxPage - 1) < orders.totalPages ? start + (maxPage - 1) : orders.totalPages)})"
                  class="flex justify-center mt-12">
-                <nav class="inline-flex items-center space-x-1.5" aria-label="주문 페이지 목록">
+                <nav class="inline-flex items-center space-x-1.5" aria-label="주문 내역 페이지 목록">
+                    <!-- 이전 페이지 버튼 -->
                     <a th:href="@{'/orders/' + ${orders.number - 1}}"
                        th:classappend="${orders.first} ? 'pointer-events-none opacity-30 cursor-not-allowed' : 'hover:bg-neutral-100'"
                        class="px-4 py-2 text-xs font-semibold text-neutral-700 bg-white border border-neutral-300 rounded-full transition">
                         PREV
                     </a>
 
+                    <!-- 페이지 번호 버튼 목록 -->
                     <a th:each="page: ${#numbers.sequence(start, end)}"
                        th:href="@{'/orders/' + ${page - 1}}"
                        th:text="${page}"
@@ -173,6 +178,7 @@
                         1
                     </a>
 
+                    <!-- 다음 페이지 버튼 -->
                     <a th:href="@{'/orders/' + ${orders.number + 1}}"
                        th:classappend="${orders.last} ? 'pointer-events-none opacity-30 cursor-not-allowed' : 'hover:bg-neutral-100'"
                        class="px-4 py-2 text-xs font-semibold text-neutral-700 bg-white border border-neutral-300 rounded-full transition">
@@ -185,41 +191,45 @@
 
     </main>
 
-    <!-- 푸터 -->
+    <!-- 푸터 (토스트, 비동기 모달, Api 클라이언트 자동 포함) -->
     <footer th:replace="~{fragment/footer::footers}"></footer>
 
-    <!-- 주문 취소 AJAX 자바스크립트 -->
+    <!-- 주문 취소 비즈니스 로직 스크립트 -->
     <script>
-        function cancelOrder(orderId) {
-            if (!confirm('해당 주문을 정말 취소하시겠습니까?')) return;
+        /**
+         * [실제 DB 주문 취소 요청 - 커스텀 모달 & 토스트 연동]
+         */
+        async function cancelOrder(orderId, btn) {
+            const confirmed = await Modal.confirm('해당 주문을 정말 취소하시겠습니까?\n취소 시 결제 및 차감된 상품 재고가 즉시 원상 복구됩니다.', {
+                title: '주문 취소 확인',
+                confirmText: '주문 취소',
+                type: 'danger'
+            });
+            if (!confirmed) return;
 
-            const token = document.querySelector('meta[name="_csrf"]')?.content;
-            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
-
-            fetch('/order/' + orderId + '/cancel', {
-                method: 'POST',
-                headers: {
-                    [header]: token
-                }
-            })
-            .then(res => {
-                if (res.ok) {
-                    alert('주문이 취소되었습니다.');
-                    location.reload();
-                } else {
-                    res.text().then(msg => alert(msg || '주문 취소에 실패하였습니다.'));
-                }
-            })
-            .catch(() => alert('주문 취소 처리 중 오류가 발생했습니다.'));
+            const res = await Api.post('/order/' + orderId + '/cancel', {}, btn);
+            if (res.success) {
+                Toast.success(res.message || '주문이 취소되었습니다.');
+                setTimeout(() => location.reload(), 500);
+            } else {
+                Toast.error(res.message || '주문 취소 처리에 실패하였습니다.');
+            }
         }
 
-        function cancelSampleOrder(btn) {
-            if (confirm('해당 주문을 취소하시겠습니까?')) {
+        /**
+         * [샘플 주문 UI 취소 시뮬레이션]
+         */
+        async function cancelSampleOrder(btn) {
+            const confirmed = await Modal.confirm('체험용 샘플 주문을 취소 상태로 변경하시겠습니까?', {
+                title: '샘플 주문 취소',
+                confirmText: '확인'
+            });
+            if (confirmed) {
                 const statusBadge = btn.previousElementSibling;
                 statusBadge.className = 'text-[11px] font-bold px-3 py-1 bg-red-100 text-red-700 rounded-full uppercase tracking-wider';
                 statusBadge.innerText = '주문취소';
                 btn.remove();
-                alert('주문이 취소되었습니다.');
+                Toast.success('주문이 취소 상태로 변경되었습니다.');
             }
         }
     </script>

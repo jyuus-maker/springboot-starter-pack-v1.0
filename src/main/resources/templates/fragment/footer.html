@@ -39,12 +39,12 @@
 
             <!-- 메뉴 링크 (2 cols) -->
             <div class="md:col-span-2 space-y-2">
-                <h4 class="text-xs font-bold text-white tracking-[0.2em] uppercase mb-3">COLLECTION</h4>
-                <ul class="space-y-2 text-xs font-medium">
-                    <li><a href="/" class="hover:text-white transition">NEW ARRIVALS</a></li>
-                    <li><a href="/cart" class="hover:text-white transition">SHOPPING BAG</a></li>
-                    <li><a href="/orders" class="hover:text-white transition">ORDER TRACKING</a></li>
-                    <li><a href="/members/mypage" class="hover:text-white transition">MY STUDIO</a></li>
+                <h4 class="text-xs font-bold text-white tracking-[0.2em] uppercase mb-3">NAVIGATION</h4>
+                <ul class="space-y-1.5 text-xs">
+                    <li><a href="/" class="hover:text-white transition">컬렉션 둘러보기</a></li>
+                    <li><a href="/story" class="hover:text-amber-200 transition">브랜드 스토리 2027</a></li>
+                    <li><a href="/cart" class="hover:text-white transition">쇼핑백 (장바구니)</a></li>
+                    <li><a href="/orders" class="hover:text-white transition">주문 및 배송 조회</a></li>
                 </ul>
             </div>
 
@@ -72,6 +72,11 @@
             </div>
         </div>
     </div>
+
+    <!-- 글로벌 공통 프론트엔드 모듈: 토스트 시스템, 비동기 확인 모달, 표준 API 통신 클라이언트 -->
+    <script th:src="@{/js/toast.js}"></script>
+    <script th:src="@{/js/modal.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
 </footer>
 </body>
 </html>

@@ -1,0 +1,92 @@
+# ==============================================================================
+# [REHMIA 이커머스 풀스택 Docker Compose 오케스트레이션]
+#
+# 구성 요소:
+# 1) db    : PostgreSQL 16 Alpine (데이터베이스 + 헬스체크)
+# 2) app   : Spring Boot 4.x / Java 21 (애플리케이션 컨테이너)
+# 3) nginx : Nginx Alpine (80포트 리버스 프록시 + 미디어 직통 서빙 + Gzip 압축)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. 데이터베이스 서비스 (PostgreSQL)
+  # ----------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: shop_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-shopdb}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-My123456789!}
+    volumes:
+      - shop_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-shopdb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - shop_network
+
+  # ----------------------------------------------------------------------------
+  # 2. 백엔드 애플리케이션 서비스 (Spring Boot 4.x)
+  # ----------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shop_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-shopdb}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-My123456789!}
+      ITEM_IMG_LOCATION: /data/shopmall/item
+      UPLOAD_PATH: file:///data/shopmall/
+    volumes:
+      - shop_media_data:/data/shopmall
+    expose:
+      - "8080"
+    networks:
+      - shop_network
+
+  # ----------------------------------------------------------------------------
+  # 3. 리버스 프록시 및 정적/미디어 웹 서버 (Nginx)
+  # ----------------------------------------------------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: shop_nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "${APP_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - shop_media_data:/data/shopmall:ro
+    networks:
+      - shop_network
+
+# ------------------------------------------------------------------------------
+# 영속 볼륨 정의 (DB 데이터 및 업로드 이미지 컨테이너 재생성 시에도 보존)
+# ------------------------------------------------------------------------------
+volumes:
+  shop_db_data:
+    name: shop_db_data
+  shop_media_data:
+    name: shop_media_data
+
+# ------------------------------------------------------------------------------
+# 전용 브리지 네트워크
+# ------------------------------------------------------------------------------
+networks:
+  shop_network:
+    name: shop_network
+    driver: bridge

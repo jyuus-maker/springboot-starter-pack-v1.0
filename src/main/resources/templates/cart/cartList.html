@@ -4,151 +4,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOPPING BAG - REHMIA</title>
-    <!-- CSRF Meta Tags for AJAX -->
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
+    <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : ''}">
+    <title>쇼핑백 (SHOPPING BAG) - REHMIA ATHLETIC</title>
+    <!-- Tailwind CSS 컴파일 빌드된 output.css 연결 -->
     <link rel="stylesheet" th:href="@{/css/output.css}">
 </head>
-<body class="bg-[#fafaf9] text-neutral-800 flex flex-col min-h-screen antialiased selection:bg-neutral-900 selection:text-white">
+<body class="bg-[#fcfbf9] text-neutral-900 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- 헤더 -->
-    <header th:replace="~{fragment/header::headers}"></header>
+    <!-- 상단 글로벌 네비게이션 헤더 -->
+    <div th:replace="~{fragment/header::headers}"></div>
 
-    <!-- 메인 컨텐츠 -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        
-        <!-- 타이틀 헤더 -->
-        <div class="border-b border-neutral-200 pb-6 mb-8 flex flex-col sm:flex-row sm:items-end justify-between">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+
+        <!-- 페이지 헤더 (Editorial Title) -->
+        <div class="mb-8 border-b border-neutral-200 pb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-                <span class="text-xs font-bold tracking-[0.25em] text-neutral-400 uppercase">MY SELECTION</span>
-                <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight mt-1 uppercase">SHOPPING BAG (쇼핑백)</h1>
+                <span class="text-[10px] font-bold tracking-[0.3em] uppercase text-neutral-400">YOUR SELECTIONS</span>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-neutral-950 uppercase mt-1">SHOPPING BAG</h1>
             </div>
-            <p class="text-xs text-neutral-500 font-light mt-2 sm:mt-0">
-                르미아의 테크니컬 액티브 컬렉션을 확인하고 주문을 진행하세요.
-            </p>
+            <div class="text-xs text-neutral-500 font-medium">
+                선택된 아이템: <span id="selectedCount" class="font-bold text-neutral-900">0</span>개
+            </div>
         </div>
 
-        <!-- 쇼핑백 그리드 (좌: 상품 목록, 우: 결제 요약 카드) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-            
-            <!-- 좌측 : 상품 리스트 영역 (8칸) -->
-            <div class="lg:col-span-8 bg-white rounded-3xl shadow-sm border border-neutral-200/80 p-6 sm:p-8 space-y-6">
-                
-                <!-- 전체 선택 컨트롤 바 -->
-                <div class="flex items-center justify-between pb-4 border-b border-neutral-100 text-xs">
-                    <label class="inline-flex items-center space-x-2 font-bold text-neutral-700 cursor-pointer">
-                        <input type="checkbox" id="checkAll" onclick="toggleAll(this)" checked 
-                               class="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-500 border-neutral-300">
-                        <span>전체 선택 (<span id="selectedCount">2</span>개)</span>
+        <!-- 본문 그리드: 좌측 장바구니 리스트(8칸) + 우측 결제 요약(4칸) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- 좌측 : 장바구니 상품 목록 -->
+            <div class="lg:col-span-8 space-y-4">
+
+                <!-- 전체 선택 체크박스 & 선택 삭제 바 -->
+                <div class="bg-white rounded-2xl p-4 border border-neutral-200/80 flex items-center justify-between shadow-sm">
+                    <label class="inline-flex items-center space-x-2 text-xs font-bold text-neutral-800 cursor-pointer">
+                        <input id="checkall" type="checkbox" onclick="checkAll()" checked
+                               class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 cursor-pointer">
+                        <span>전체 선택</span>
                     </label>
-                    <button type="button" onclick="deleteSelected()" class="text-neutral-400 hover:text-red-500 font-medium transition cursor-pointer">
-                        선택 삭제
-                    </button>
+                    <span class="text-xs text-neutral-400 font-light">주문할 상품을 선택하세요</span>
                 </div>
 
-                <!-- 상품 목록 아이템 반복 -->
-                <div class="space-y-4">
-                    
-                    <!-- DB 데이터가 있을 경우 (Thymeleaf cartItems) -->
-                    <div th:if="${cartItems != null and not #lists.isEmpty(cartItems)}" 
-                         th:each="cartItem : ${cartItems}" 
-                         class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#fafaf9] border border-neutral-200/60 hover:border-neutral-300 transition">
-                        
-                        <div class="flex items-center space-x-4">
-                            <input type="checkbox" name="cartChkBox" th:value="${cartItem.cartItemId}" checked 
-                                   onchange="calculateTotalOrderPrice()"
-                                   class="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-500 border-neutral-300">
-                            
-                            <img th:src="${cartItem.imgUrl != null ? cartItem.imgUrl : 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80'}" 
-                                 th:alt="${cartItem.itemName}" 
-                                 class="w-20 h-24 rounded-xl object-cover flex-shrink-0 bg-neutral-100 border border-neutral-200">
-                            
-                            <div>
-                                <span class="text-[9px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA ACTIVE</span>
-                                <h4 class="font-bold text-neutral-900 text-sm sm:text-base mt-0.5" th:text="${cartItem.itemName}">상품명</h4>
-                                <p class="text-xs text-neutral-500 mt-1 font-light">단가: <span th:id="'price_' + ${cartItem.cartItemId}" class="font-semibold text-neutral-800" th:text="${cartItem.price}">69000</span>원</p>
+                <!-- 1) DB 장바구니에 상품이 존재할 때 렌더링 -->
+                <div th:if="${cartItems != null and not #lists.isEmpty(cartItems)}" class="space-y-3">
+                    <div th:each="cartItem : ${cartItems}"
+                         class="bg-white rounded-3xl p-5 sm:p-6 border border-neutral-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition hover:border-neutral-400">
+
+                        <div class="flex items-center space-x-4 w-full sm:w-auto">
+                            <!-- 개별 선택 체크박스 -->
+                            <input name="cartChkBox" type="checkbox" th:value="${cartItem.cartItemId}" checked
+                                   onclick="calculateTotalOrderPrice()"
+                                   class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 cursor-pointer shrink-0">
+
+                            <!-- 대표 썸네일 이미지 -->
+                            <img th:src="${cartItem.imgUrl != null and cartItem.imgUrl != '' ? cartItem.imgUrl : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300'}"
+                                 th:alt="${cartItem.itemName}"
+                                 class="w-20 h-24 object-cover rounded-2xl bg-neutral-100 shrink-0">
+
+                            <!-- 상품명 & 단가 -->
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA CORE</span>
+                                <h4 class="text-sm sm:text-base font-bold text-neutral-900 leading-snug" th:text="${cartItem.itemName}">상품명</h4>
+                                <p class="text-xs font-medium text-neutral-500">
+                                    단가: <span th:id="'price_' + ${cartItem.cartItemId}" th:text="${#numbers.formatInteger(cartItem.price, 0, 'COMMA') + '원'}">0원</span>
+                                </p>
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6">
-                            <!-- 수량 증감 버튼 -->
-                            <div class="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden px-1">
-                                <button type="button" th:onclick="'updateItemCount(' + ${cartItem.cartItemId} + ', -1)'" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">-</button>
-                                <input type="number" th:id="'count_' + ${cartItem.cartItemId}" th:value="${cartItem.count}" min="1" max="99" readonly
-                                       class="w-8 text-center text-xs font-bold text-neutral-900 border-none">
-                                <button type="button" th:onclick="'updateItemCount(' + ${cartItem.cartItemId} + ', 1)'" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">+</button>
+                        <!-- 수량 조절기 & 소계 & 삭제 버튼 -->
+                        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-neutral-100">
+                            <!-- 수량 증감 버튼 UI -->
+                            <div class="flex items-center border border-neutral-300 rounded-full px-2 py-1 bg-neutral-50">
+                                <button type="button" th:onclick="'updateItemCount(' + ${cartItem.cartItemId} + ', -1)'"
+                                        class="w-6 h-6 flex items-center justify-center text-neutral-500 hover:text-black font-bold text-sm">-</button>
+                                <input th:id="'count_' + ${cartItem.cartItemId}" type="text" readonly th:value="${cartItem.count}"
+                                       class="w-8 text-center bg-transparent border-0 text-xs font-bold text-neutral-900 focus:ring-0 p-0">
+                                <button type="button" th:onclick="'updateItemCount(' + ${cartItem.cartItemId} + ', 1)'"
+                                        class="w-6 h-6 flex items-center justify-center text-neutral-500 hover:text-black font-bold text-sm">+</button>
                             </div>
 
                             <!-- 합계 금액 -->
-                            <div class="text-right min-w-[90px]">
-                                <span th:id="'totalPrice_' + ${cartItem.cartItemId}" 
-                                      class="font-black text-base text-neutral-950" 
-                                      th:text="${#numbers.formatInteger(cartItem.price * cartItem.count, 0, 'COMMA')} + '원'">
-                                    69,000원
-                                </span>
+                            <div class="text-right min-w-[80px]">
+                                <span th:id="'totalPrice_' + ${cartItem.cartItemId}"
+                                      th:text="${#numbers.formatInteger(cartItem.price * cartItem.count, 0, 'COMMA') + '원'}"
+                                      class="text-sm font-black text-neutral-950">0원</span>
                             </div>
 
-                            <!-- 삭제 버튼 -->
-                            <button type="button" th:onclick="'deleteCartItem(' + ${cartItem.cartItemId} + ')'" 
-                                    class="text-neutral-400 hover:text-red-500 transition cursor-pointer p-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <!-- 개별 삭제 버튼 -->
+                            <button type="button" th:onclick="'deleteCartItem(' + ${cartItem.cartItemId} + ')'"
+                                    class="text-neutral-400 hover:text-rose-600 p-1.5 transition rounded-lg hover:bg-neutral-100 cursor-pointer"
+                                    aria-label="삭제">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 2) 장바구니가 비어있을 때 (2026-2027 르미아 샘플 데모 카드) -->
+                <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="space-y-3">
+                    
+                    <div class="bg-neutral-100/60 rounded-3xl p-8 text-center border border-dashed border-neutral-300 space-y-3">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-neutral-200/80 flex items-center justify-center text-neutral-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-neutral-700">쇼핑백에 담긴 상품이 없습니다</h3>
+                        <p class="text-xs text-neutral-400 max-w-sm mx-auto font-light leading-relaxed">
+                            르미아 액티브 컬렉션을 둘러보고 마음에 드는 상품을 담아보세요.
+                        </p>
+                        <a href="/" class="inline-flex px-5 py-2.5 bg-neutral-900 text-white rounded-full text-xs font-bold tracking-wider hover:bg-neutral-800 transition shadow-sm uppercase">
+                            EXPLORE COLLECTION
+                        </a>
+                    </div>
+
+                    <!-- 프론트엔드 인터랙션 체험을 위한 디스플레이 샘플 아이템 2종 -->
+                    <div class="mt-8 border-t border-neutral-200 pt-6">
+                        <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">PREVIEW DEMO ITEMS</span>
+                        <h4 class="text-xs font-semibold text-neutral-500 mb-3">아래는 디자인 및 수량 계산 체험용 샘플입니다</h4>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-neutral-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <input name="cartChkBox" type="checkbox" value="sample1" checked onclick="calculateTotalOrderPrice()"
+                                   class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 cursor-pointer">
+                            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300" alt="레깅스"
+                                 class="w-20 h-24 object-cover rounded-2xl bg-neutral-100">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA STUDIO</span>
+                                <h4 class="text-sm sm:text-base font-bold text-neutral-900">시그니처 테크 플렉스 레깅스</h4>
+                                <p class="text-xs font-medium text-neutral-500">단가: <span id="price_sample1">69,000원</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-neutral-100">
+                            <div class="flex items-center border border-neutral-300 rounded-full px-2 py-1 bg-neutral-50">
+                                <button type="button" onclick="changeSampleCount('sample1', -1)" class="w-6 h-6 flex items-center justify-center text-neutral-500 hover:text-black font-bold text-sm">-</button>
+                                <input id="count_sample1" type="text" readonly value="1" class="w-8 text-center bg-transparent border-0 text-xs font-bold text-neutral-900 focus:ring-0 p-0">
+                                <button type="button" onclick="changeSampleCount('sample1', 1)" class="w-6 h-6 flex items-center justify-center text-neutral-500 hover:text-black font-bold text-sm">+</button>
+                            </div>
+                            <div class="text-right min-w-[80px]">
+                                <span id="totalPrice_sample1" class="text-sm font-black text-neutral-950">69,000원</span>
+                            </div>
+                            <button type="button" onclick="this.closest('.flex-col').remove(); calculateTotalOrderPrice();" class="text-neutral-400 hover:text-rose-600 p-1.5 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- DB 데이터가 없을 때 기본 샘플 목록 (2026-2027 르미아 애슬래틱 아이템) -->
-                    <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="space-y-4">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#fafaf9] border border-neutral-200/60">
-                            <div class="flex items-center space-x-4">
-                                <input type="checkbox" name="cartChkBox" value="1" checked onchange="calculateTotalOrderPrice()"
-                                       class="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-500 border-neutral-300">
-                                <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80" alt="시그니처 테크 플렉스 레깅스" class="w-20 h-24 rounded-xl object-cover flex-shrink-0 bg-neutral-100 border border-neutral-200">
-                                <div>
-                                    <span class="text-[9px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA LEGGINGS</span>
-                                    <h4 class="font-bold text-neutral-900 text-sm sm:text-base mt-0.5">시그니처 테크 플렉스 레깅스</h4>
-                                    <p class="text-xs text-neutral-500 mt-1 font-light">단가: <span id="price_1" class="font-semibold text-neutral-800">69000</span>원</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6">
-                                <div class="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden px-1">
-                                    <button type="button" onclick="changeSampleCount(1, -1)" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">-</button>
-                                    <input type="number" id="count_1" value="1" min="1" max="99" readonly class="w-8 text-center text-xs font-bold text-neutral-900 border-none">
-                                    <button type="button" onclick="changeSampleCount(1, 1)" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">+</button>
-                                </div>
-                                <div class="text-right min-w-[90px]">
-                                    <span id="totalPrice_1" class="font-black text-base text-neutral-950">69,000원</span>
-                                </div>
-                                <button type="button" onclick="this.closest('.flex').remove(); calculateTotalOrderPrice();" class="text-neutral-400 hover:text-red-500 transition cursor-pointer p-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </button>
+                    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-neutral-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <input name="cartChkBox" type="checkbox" value="sample2" checked onclick="calculateTotalOrderPrice()"
+                                   class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 cursor-pointer">
+                            <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=300" alt="윈드브레이커"
+                                 class="w-20 h-24 object-cover rounded-2xl bg-neutral-100">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA STUDIO</span>
+                                <h4 class="text-sm sm:text-base font-bold text-neutral-900">초경량 에어로 윈드브레이커</h4>
+                                <p class="text-xs font-medium text-neutral-500">단가: <span id="price_sample2">149,000원</span></p>
                             </div>
                         </div>
-
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#fafaf9] border border-neutral-200/60">
-                            <div class="flex items-center space-x-4">
-                                <input type="checkbox" name="cartChkBox" value="2" checked onchange="calculateTotalOrderPrice()"
-                                       class="w-4 h-4 rounded text-neutral-900 focus:ring-neutral-500 border-neutral-300">
-                                <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=400&q=80" alt="초경량 에어로 윈드브레이커" class="w-20 h-24 rounded-xl object-cover flex-shrink-0 bg-neutral-100 border border-neutral-200">
-                                <div>
-                                    <span class="text-[9px] font-bold tracking-widest text-neutral-400 uppercase">REHMIA OUTER</span>
-                                    <h4 class="font-bold text-neutral-900 text-sm sm:text-base mt-0.5">초경량 에어로 윈드브레이커</h4>
-                                    <p class="text-xs text-neutral-500 mt-1 font-light">단가: <span id="price_2" class="font-semibold text-neutral-800">149000</span>원</p>
-                                </div>
+                        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-neutral-100">
+                            <div class="flex items-center border border-neutral-300 rounded-full px-2 py-1 bg-neutral-50">
+                                <button type="button" onclick="changeSampleCount('sample2', -1)" class="w-6 h-6 flex items-center justify-center text-neutral-500 hover:text-black font-bold text-sm">-</button>
+                                <input id="count_sample2" type="text" readonly value="1" class="w-8 text-center bg-transparent border-0 text-xs font-bold text-neutral-900 focus:ring-0 p-0">
+                                <button type="button" onclick="changeSampleCount('sample2', 1)" class="w-6 h-6 flex items-center justify-center text-neutral-500 hover:text-black font-bold text-sm">+</button>
                             </div>
-                            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6">
-                                <div class="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden px-1">
-                                    <button type="button" onclick="changeSampleCount(2, -1)" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">-</button>
-                                    <input type="number" id="count_2" value="1" min="1" max="99" readonly class="w-8 text-center text-xs font-bold text-neutral-900 border-none">
-                                    <button type="button" onclick="changeSampleCount(2, 1)" class="w-7 h-7 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-bold">+</button>
-                                </div>
-                                <div class="text-right min-w-[90px]">
-                                    <span id="totalPrice_2" class="font-black text-base text-neutral-950">149,000원</span>
-                                </div>
-                                <button type="button" onclick="this.closest('.flex').remove(); calculateTotalOrderPrice();" class="text-neutral-400 hover:text-red-500 transition cursor-pointer p-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </button>
+                            <div class="text-right min-w-[80px]">
+                                <span id="totalPrice_sample2" class="text-sm font-black text-neutral-950">149,000원</span>
                             </div>
+                            <button type="button" onclick="this.closest('.flex-col').remove(); calculateTotalOrderPrice();" class="text-neutral-400 hover:text-rose-600 p-1.5 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
                         </div>
                     </div>
 
@@ -167,7 +193,7 @@
                     <div class="space-y-3 text-xs sm:text-sm text-neutral-600">
                         <div class="flex justify-between">
                             <span class="text-neutral-400">상품 금액</span>
-                            <span id="orderSubtotal" class="font-bold text-neutral-900">218,000원</span>
+                            <span id="orderSubtotal" class="font-bold text-neutral-900">0원</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-neutral-400">배송비</span>
@@ -181,10 +207,11 @@
 
                     <div class="border-t border-neutral-200 pt-4 flex justify-between items-baseline">
                         <span class="text-xs font-bold text-neutral-900 uppercase tracking-wider">결제 예정 금액</span>
-                        <span id="orderTotal" class="text-2xl font-black text-neutral-950">218,000원</span>
+                        <span id="orderTotal" class="text-2xl font-black text-neutral-950">0원</span>
                     </div>
 
-                    <button type="button" onclick="orders()"
+                    <!-- 주문 진행 버튼 (로딩 스피너 및 중복 클릭 방지 탑재) -->
+                    <button type="button" id="orderCheckoutBtn" onclick="orders(this)"
                             class="w-full py-4 px-4 bg-neutral-950 hover:bg-neutral-800 active:bg-black text-white font-bold rounded-full shadow-lg hover:shadow-xl transition flex items-center justify-center space-x-2 cursor-pointer text-xs uppercase tracking-wider">
                         <span>CHECKOUT (주문하기)</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -200,12 +227,13 @@
 
     </main>
 
-    <!-- 푸터 -->
+    <!-- 푸터 (토스트, 비동기 모달, Api 클라이언트 자동 포함) -->
     <footer th:replace="~{fragment/footer::footers}"></footer>
 
-    <!-- 장바구니 계산 및 주문 자바스크립트 -->
+    <!-- 장바구니 프론트엔드 비즈니스 로직 스크립트 -->
     <script>
-        function toggleAll(master) {
+        function checkAll() {
+            const master = document.getElementById('checkall');
             const boxes = document.querySelectorAll('input[name="cartChkBox"]');
             boxes.forEach(b => b.checked = master.checked);
             calculateTotalOrderPrice();
@@ -249,92 +277,101 @@
             }
         }
 
-        function updateItemCount(cartItemId, delta) {
+        /**
+         * [장바구니 상품 수량 변경 - 비동기 API 모듈 호출]
+         */
+        async function updateItemCount(cartItemId, delta) {
             const countInput = document.getElementById('count_' + cartItemId);
             let next = (parseInt(countInput.value, 10) || 1) + delta;
-            if (next < 1) return;
-
-            const token = document.querySelector('meta[name="_csrf"]')?.content;
-            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
-
-            fetch('/cartItem/' + cartItemId + '?count=' + next, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [header]: token
-                }
-            })
-            .then(res => {
-                if (res.ok) {
-                    location.reload();
-                } else {
-                    alert('수량 변경에 실패하였습니다.');
-                }
-            })
-            .catch(() => changeSampleCount(cartItemId, delta));
-        }
-
-        function deleteCartItem(cartItemId) {
-            if (!confirm('해당 상품을 쇼핑백에서 삭제하시겠습니까?')) return;
-            const token = document.querySelector('meta[name="_csrf"]')?.content;
-            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
-
-            fetch('/cartItem/' + cartItemId, {
-                method: 'DELETE',
-                headers: {
-                    [header]: token
-                }
-            })
-            .then(res => {
-                if (res.ok) {
-                    location.reload();
-                } else {
-                    alert('삭제에 실패하였습니다.');
-                }
-            })
-            .catch(() => location.reload());
-        }
-
-        function orders() {
-            const token = document.querySelector('meta[name="_csrf"]')?.content;
-            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
-            const boxes = document.querySelectorAll('input[name="cartChkBox"]:checked');
-
-            if (boxes.length === 0) {
-                alert('주문할 상품을 선택해주세요.');
+            if (next < 1) {
+                Toast.info('최소 1개 이상이어야 합니다.');
                 return;
             }
 
-            const dataList = [];
-            boxes.forEach(box => {
-                dataList.push({ cartItemId: box.value });
-            });
-
-            fetch('/cart/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [header]: token
-                },
-                body: JSON.stringify({ cartOrderDtoList: dataList })
-            })
-            .then(res => {
-                if (res.ok) {
-                    alert('주문이 정상적으로 접수되었습니다.');
-                    location.href = '/orders';
-                } else if (res.status === 401) {
-                    alert('로그인이 필요합니다.');
-                    location.href = '/members/login';
-                } else {
-                    res.text().then(msg => alert(msg || '주문 처리에 실패하였습니다.'));
+            const res = await Api.patch('/cartItem/' + cartItemId + '?count=' + next);
+            if (res.success) {
+                countInput.value = next;
+                const priceEl = document.getElementById('price_' + cartItemId);
+                const totalEl = document.getElementById('totalPrice_' + cartItemId);
+                if (priceEl && totalEl) {
+                    const price = parseInt(priceEl.innerText.replace(/[^0-9]/g, ''), 10) || 0;
+                    totalEl.innerText = (price * next).toLocaleString() + '원';
                 }
-            })
-            .catch(() => {
-                alert('[안내] 주문이 접수되었습니다.');
-                location.href = '/orders';
-            });
+                calculateTotalOrderPrice();
+                Toast.success('수량이 변경되었습니다.');
+            } else {
+                Toast.error(res.message || '수량 변경에 실패하였습니다.');
+            }
         }
 
+        /**
+         * [장바구니 상품 개별 삭제 - 커스텀 컨펌 모달 적용]
+         */
+        async function deleteCartItem(cartItemId) {
+            const confirmed = await Modal.confirm('해당 상품을 쇼핑백에서 삭제하시겠습니까?', {
+                title: '쇼핑백 아이템 삭제',
+                confirmText: '삭제',
+                type: 'danger'
+            });
+            if (!confirmed) return;
+
+            const res = await Api.delete('/cartItem/' + cartItemId);
+            if (res.success) {
+                Toast.success('쇼핑백에서 삭제되었습니다.');
+                setTimeout(() => location.reload(), 400);
+            } else {
+                Toast.error(res.message || '삭제 처리에 실패하였습니다.');
+            }
+        }
+
+        /**
+         * [장바구니 선택 상품 일괄 주문 - 커스텀 모달 & 로딩 스피너 탑재]
+         */
+        async function orders(btn) {
+            const boxes = document.querySelectorAll('input[name="cartChkBox"]:checked');
+
+            if (boxes.length === 0) {
+                Toast.error('주문할 상품을 1개 이상 선택해주세요.');
+                return;
+            }
+
+            // 샘플 아이템 선택 여부 확인
+            const hasSample = Array.from(boxes).some(b => b.value.startsWith('sample'));
+            if (hasSample && boxes.length === 1) {
+                Toast.info('샘플 아이템은 실제 주문이 불가능합니다. 상단 컬렉션에서 상품을 직접 담아주세요.');
+                return;
+            }
+
+            const confirmed = await Modal.confirm('선택하신 ' + boxes.length + '개 상품을 바로 주문하시겠습니까?', {
+                title: '주문 접수 확인',
+                confirmText: '주문 진행'
+            });
+            if (!confirmed) return;
+
+            const dataList = [];
+            boxes.forEach(box => {
+                if (!box.value.startsWith('sample')) {
+                    dataList.push({ cartItemId: box.value });
+                }
+            });
+
+            if (dataList.length === 0) {
+                Toast.info('실제 주문 가능한 장바구니 상품을 선택해주세요.');
+                return;
+            }
+
+            const triggerBtn = btn || document.getElementById('orderCheckoutBtn');
+            const res = await Api.post('/cart/orders', { cartOrderDtoList: dataList }, triggerBtn);
+
+            if (res.success) {
+                Toast.success(res.message || '주문이 성공적으로 접수되었습니다.');
+                setTimeout(() => { location.href = '/orders'; }, 600);
+            } else {
+                Toast.error(res.message || '주문 처리 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 초기 화면 로드 시 주문 합계 계산
         calculateTotalOrderPrice();
     </script>
 </body>

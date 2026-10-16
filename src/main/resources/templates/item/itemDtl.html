@@ -4,119 +4,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${item != null ? item.itemName + ' - REHMIA' : '상품 상세 - REHMIA'}">상품 상세 - REHMIA</title>
-    <!-- CSRF Meta Tags for AJAX -->
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
+    <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : ''}">
+    <title th:text="${item != null ? item.itemName + ' - REHMIA ATHLETIC' : '상품 상세 - REHMIA ATHLETIC'}">상품 상세 - REHMIA</title>
+    <!-- Tailwind CSS 컴파일 빌드된 output.css 연결 -->
     <link rel="stylesheet" th:href="@{/css/output.css}">
 </head>
-<body class="bg-[#fafaf9] text-neutral-800 flex flex-col min-h-screen antialiased selection:bg-neutral-900 selection:text-white">
+<body class="bg-[#fcfbf9] text-neutral-900 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- 헤더 -->
-    <header th:replace="~{fragment/header::headers}"></header>
+    <!-- 상단 글로벌 네비게이션 헤더 -->
+    <div th:replace="~{fragment/header::headers}"></div>
 
-    <!-- 메인 컨텐츠 -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        
-        <!-- 상품 상단 요약 정보 (이미지 + 구매 옵션) -->
-        <div class="bg-white rounded-3xl shadow-sm border border-neutral-200/80 p-6 sm:p-10 lg:p-12 mb-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
-                
-                <!-- 좌측 : 상품 이미지 갤러리 -->
-                <div class="space-y-4">
-                    <!-- 메인 대표 이미지 -->
-                    <div class="aspect-[4/5] bg-neutral-100 rounded-2xl overflow-hidden border border-neutral-200/80 relative group">
-                        <img id="mainImg" 
-                             th:src="${item != null and item.itemImgDtoList != null and not #lists.isEmpty(item.itemImgDtoList) ? item.itemImgDtoList[0].imgUrl : 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=80'}" 
-                             th:alt="${item != null ? item.itemName : '상품 대표 이미지'}" 
-                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <span class="absolute top-4 left-4 bg-neutral-900/80 backdrop-blur-sm text-white text-[10px] font-bold tracking-widest px-2.5 py-1 rounded uppercase">
-                            REHMIA STUDIO
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+
+        <!-- 브레드크럼 (Breadcrumb Navigation) -->
+        <nav class="flex text-xs text-neutral-400 font-medium space-x-2 mb-8 tracking-wider uppercase">
+            <a href="/" class="hover:text-neutral-900 transition">HOME</a>
+            <span>/</span>
+            <a href="/#productList" class="hover:text-neutral-900 transition">COLLECTION</a>
+            <span>/</span>
+            <span class="text-neutral-900 font-bold" th:text="${item != null ? item.itemName : 'ACTIVEWEAR'}">ITEM DETAIL</span>
+        </nav>
+
+        <!-- 상품 기본 정보 그리드 (좌측 이미지 갤러리 + 우측 상세 주문 카드) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 mb-16">
+
+            <!-- 좌측 : 이미지 갤러리 영역 (7칸) -->
+            <div class="lg:col-span-7 space-y-4">
+                <!-- 메인 대표 뷰어 -->
+                <div class="overflow-hidden rounded-3xl bg-neutral-100 aspect-3/4 max-h-[580px] w-full flex items-center justify-center border border-neutral-200/80 shadow-sm relative group">
+                    <img id="mainImg"
+                         th:src="${item != null and item.itemImgDtoList != null and not #lists.isEmpty(item.itemImgDtoList) ? item.itemImgDtoList[0].imgUrl : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800'}"
+                         th:alt="${item != null ? item.itemName : '대표 이미지'}"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-4 left-4 px-3 py-1 bg-black/70 backdrop-blur-md text-white text-[10px] font-bold rounded-full tracking-widest uppercase">
+                        REHMIA STUDIO
+                    </span>
+                </div>
+
+                <!-- 서브 썸네일 리스트 -->
+                <div class="flex items-center space-x-3 overflow-x-auto pb-2"
+                     th:if="${item != null and item.itemImgDtoList != null and not #lists.isEmpty(item.itemImgDtoList)}">
+                    <button type="button" th:each="itemImg : ${item.itemImgDtoList}"
+                            th:onclick="'changeMainImg(\'' + ${itemImg.imgUrl} + '\')'"
+                            class="w-20 h-24 rounded-2xl overflow-hidden border-2 border-transparent hover:border-neutral-900 focus:border-neutral-900 transition shrink-0 bg-neutral-100 cursor-pointer">
+                        <img th:src="${itemImg.imgUrl}" alt="썸네일" class="w-full h-full object-cover">
+                    </button>
+                </div>
+            </div>
+
+            <!-- 우측 : 상품 옵션 및 주문 박스 (5칸) -->
+            <div class="lg:col-span-5 flex flex-col justify-between space-y-6">
+
+                <div class="space-y-6">
+                    <!-- 브랜드 라인 및 상태 배지 -->
+                    <div class="flex items-center justify-between border-b border-neutral-200 pb-4">
+                        <span class="text-xs font-bold tracking-[0.25em] text-neutral-400 uppercase">2026-2027 TECHNICAL WEAR</span>
+                        <span th:if="${item != null and item.itemSellStatus != null and item.itemSellStatus.name() == 'SELL'}"
+                              class="inline-flex px-3 py-1 bg-neutral-900 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
+                            판매중 (IN STOCK)
+                        </span>
+                        <span th:if="${item == null or (item.itemSellStatus != null and item.itemSellStatus.name() != 'SELL')}"
+                              class="inline-flex px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                            품절 (SOLD OUT)
                         </span>
                     </div>
 
-                    <!-- 썸네일 리스트 (클릭 시 대표 이미지 변경) -->
-                    <div class="flex gap-3 overflow-x-auto pb-2">
-                        <!-- 동적 썸네일 -->
-                        <div th:if="${item != null and item.itemImgDtoList != null and not #lists.isEmpty(item.itemImgDtoList)}" 
-                             th:each="itemImg : ${item.itemImgDtoList}" 
-                             class="w-20 h-24 rounded-xl overflow-hidden border border-neutral-200 hover:border-neutral-900 cursor-pointer flex-shrink-0 transition">
-                            <img th:src="${itemImg.imgUrl}" 
-                                 onclick="changeMainImg(this.src)" 
-                                 alt="썸네일" 
-                                 class="w-full h-full object-cover">
-                        </div>
-
-                        <!-- 백엔드 바인딩 없을 때 기본 애슬래틱 썸네일 샘플 -->
-                        <div th:if="${item == null or item.itemImgDtoList == null or #lists.isEmpty(item.itemImgDtoList)}" class="flex gap-3">
-                            <div class="w-20 h-24 rounded-xl overflow-hidden border-2 border-neutral-900 cursor-pointer flex-shrink-0">
-                                <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80" onclick="changeMainImg(this.src)" alt="썸네일1" class="w-full h-full object-cover">
-                            </div>
-                            <div class="w-20 h-24 rounded-xl overflow-hidden border border-neutral-200 hover:border-neutral-900 cursor-pointer flex-shrink-0 transition">
-                                <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=400&q=80" onclick="changeMainImg(this.src)" alt="썸네일2" class="w-full h-full object-cover">
-                            </div>
-                            <div class="w-20 h-24 rounded-xl overflow-hidden border border-neutral-200 hover:border-neutral-900 cursor-pointer flex-shrink-0 transition">
-                                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80" onclick="changeMainImg(this.src)" alt="썸네일3" class="w-full h-full object-cover">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 우측 : 상품 구매 정보 및 액션 -->
-                <div class="flex flex-col justify-between space-y-8">
-                    <div>
-                        <!-- 브랜드 태그 & 판매 상태 뱃지 -->
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-bold tracking-[0.25em] text-neutral-400 uppercase">REHMIA &bull; TECHNICAL ACTIVE</span>
-                            <div>
-                                <span th:if="${item == null or item.itemSellStatus == null or item.itemSellStatus.name() == 'SELL'}" 
-                                      class="inline-flex px-3 py-1 text-[11px] font-bold rounded-full bg-neutral-900 text-white uppercase tracking-wider">
-                                    IN STOCK
-                                </span>
-                                <span th:if="${item != null and item.itemSellStatus != null and item.itemSellStatus.name() == 'SOLD_OUT'}" 
-                                      class="inline-flex px-3 py-1 text-[11px] font-bold rounded-full bg-red-100 text-red-800 uppercase tracking-wider">
-                                    SOLD OUT
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- 상품명 -->
-                        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-neutral-900 tracking-tight leading-snug mb-4" 
+                    <!-- 상품명 및 가격 -->
+                    <div class="space-y-2">
+                        <h1 class="text-2xl sm:text-3xl font-black text-neutral-950 tracking-tight leading-snug"
                             th:text="${item != null ? item.itemName : '시그니처 테크 플렉스 레깅스'}">
                             시그니처 테크 플렉스 레깅스
                         </h1>
+                        <p class="text-xs text-neutral-500 font-light leading-relaxed">
+                            인체공학적 압박 패턴과 통기성 4방향 스트레치 원단으로 완성된 르미아의 시그니처 액티브웨어.
+                        </p>
+                    </div>
 
-                        <!-- 상품 가격 -->
-                        <div class="pb-6 border-b border-neutral-200">
-                            <span class="text-3xl sm:text-4xl font-black text-neutral-950 tracking-tight" 
-                                  id="unitPriceText"
-                                  th:text="${item != null ? #numbers.formatInteger(item.price, 0, 'COMMA') + '원' : '69,000원'}">
-                                69,000원
-                            </span>
-                            <input type="hidden" id="unitPrice" th:value="${item != null ? item.price : 69000}">
-                            <input type="hidden" id="itemId" th:value="${item != null ? item.id : 1}">
+                    <!-- 단가 표시 (히든 필드 보관) -->
+                    <div class="bg-neutral-100/70 p-4 rounded-2xl flex items-center justify-between">
+                        <span class="text-xs font-medium text-neutral-500">정상 판매가</span>
+                        <div class="text-right">
+                            <span class="text-2xl font-black text-neutral-950"
+                                  th:text="${item != null ? #numbers.formatInteger(item.price, 0, 'COMMA') + '원' : '69,000원'}">69,000원</span>
                         </div>
+                    </div>
 
-                        <!-- 기능성 스펙 및 배송 정보 -->
-                        <div class="py-5 space-y-3 text-xs sm:text-sm text-neutral-600 border-b border-neutral-200">
-                            <div class="flex justify-between">
-                                <span class="text-neutral-400 font-medium uppercase tracking-wider">MATERIAL</span>
-                                <span class="font-semibold text-neutral-900">4-Way Stretch Recycled Poly 82%, Spandex 18%</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-neutral-400 font-medium uppercase tracking-wider">SHIPPING</span>
-                                <span class="font-semibold text-neutral-900">무료 배송 (14:00 이전 결제 시 당일 출고)</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-neutral-400 font-medium uppercase tracking-wider">STOCK</span>
-                                <span class="font-semibold text-neutral-900" th:text="${item != null ? item.stockNumber + '개 잔여' : '99개 잔여'}">99개 잔여</span>
-                            </div>
-                        </div>
+                    <!-- 히든 필드: 상품 ID 및 단가 -->
+                    <input type="hidden" id="itemId" th:value="${item != null ? item.id : 1}">
+                    <input type="hidden" id="unitPrice" th:value="${item != null ? item.price : 69000}">
 
-                        <!-- 수량 선택 컨트롤러 -->
-                        <div class="py-6">
-                            <label class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2.5">QUANTITY</label>
-                            <div class="flex items-center space-x-3">
+                    <!-- 수량 선택 컨트롤러 -->
+                    <div class="space-y-2 pt-2">
+                        <label class="text-xs font-bold text-neutral-700 uppercase tracking-wider">SELECT QUANTITY (수량)</label>
+                        <div class="flex items-center justify-between bg-neutral-50 border border-neutral-200 p-2 rounded-2xl">
+                            <span class="text-xs text-neutral-500 pl-3">주문 수량 선택</span>
+                            <div class="flex items-center space-x-2">
                                 <div class="flex items-center border border-neutral-300 rounded-full bg-white overflow-hidden px-1 py-0.5">
                                     <button type="button" onclick="decreaseCount()" 
                                             class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 transition font-bold focus:outline-none cursor-pointer">-</button>
@@ -137,14 +120,14 @@
                             <span id="totalPrice" class="text-3xl font-black text-neutral-950">69,000원</span>
                         </div>
 
-                        <!-- 버튼 그룹 -->
+                        <!-- 버튼 그룹 (로딩 스피너 & 중복 클릭 방지 탑재) -->
                         <div class="grid grid-cols-2 gap-3 sm:gap-4 pt-2">
-                            <button type="button" onclick="addCart()"
+                            <button type="button" id="addCartBtn" onclick="addCart(this)"
                                     class="w-full py-4 px-4 bg-white border-2 border-neutral-900 text-neutral-950 hover:bg-neutral-50 font-bold rounded-full transition flex items-center justify-center space-x-2 cursor-pointer text-xs uppercase tracking-wider">
                                 <svg class="w-4 h-4 text-neutral-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                                 <span>장바구니 담기</span>
                             </button>
-                            <button type="button" onclick="orderNow()"
+                            <button type="button" id="orderNowBtn" onclick="orderNow(this)"
                                     class="w-full py-4 px-4 bg-neutral-950 hover:bg-neutral-800 active:bg-black text-white font-bold rounded-full shadow-lg hover:shadow-xl transition flex items-center justify-center space-x-2 cursor-pointer text-xs uppercase tracking-wider">
                                 <span>바로 구매하기</span>
                             </button>
@@ -188,7 +171,7 @@
 
     </main>
 
-    <!-- 푸터 -->
+    <!-- 푸터 (토스트, 비동기 모달, Api 클라이언트 자동 포함) -->
     <footer th:replace="~{fragment/footer::footers}"></footer>
 
     <!-- 수량 계산 및 주문/장바구니 자바스크립트 -->
@@ -222,69 +205,54 @@
             }
         }
 
-        function addCart() {
-            const token = document.querySelector('meta[name="_csrf"]')?.content;
-            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+        /**
+         * [장바구니 담기 비동기 요청 - 커스텀 모달 & 토스트 연동]
+         */
+        async function addCart(btn) {
             const itemId = document.getElementById('itemId').value;
-            const count = document.getElementById('orderCount').value;
+            const count = parseInt(document.getElementById('orderCount').value, 10) || 1;
 
-            fetch('/cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [header]: token
-                },
-                body: JSON.stringify({ itemId: itemId, count: count })
-            })
-            .then(res => {
-                if (res.ok) {
-                    if (confirm('상품을 쇼핑백(장바구니)에 담았습니다. 쇼핑백으로 이동하시겠습니까?')) {
-                        location.href = '/cart';
-                    }
-                } else if (res.status === 401) {
-                    alert('로그인이 필요한 서비스입니다.');
-                    location.href = '/members/login';
-                } else {
-                    res.text().then(msg => alert(msg || '장바구니 담기에 실패하였습니다.'));
-                }
-            })
-            .catch(() => {
-                if (confirm('[안내] 장바구니에 담겼습니다. 쇼핑백 페이지로 이동하시겠습니까?')) {
+            const triggerBtn = btn || document.getElementById('addCartBtn');
+            const res = await Api.post('/cart', { itemId: itemId, count: count }, triggerBtn);
+
+            if (res.success) {
+                const moveToCart = await Modal.confirm('상품을 쇼핑백(장바구니)에 담았습니다.\n지금 쇼핑백으로 이동하시겠습니까?', {
+                    title: '쇼핑백 담기 완료',
+                    confirmText: '쇼핑백 이동',
+                    cancelText: '계속 쇼핑하기'
+                });
+                if (moveToCart) {
                     location.href = '/cart';
+                } else {
+                    Toast.success('쇼핑백에 상품이 안전하게 보관되었습니다.');
                 }
-            });
+            } else {
+                Toast.error(res.message || '쇼핑백 담기에 실패하였습니다.');
+            }
         }
 
-        function orderNow() {
-            const token = document.querySelector('meta[name="_csrf"]')?.content;
-            const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+        /**
+         * [바로 구매하기 비동기 요청 - 커스텀 모달 & 로딩 스피너 탑재]
+         */
+        async function orderNow(btn) {
             const itemId = document.getElementById('itemId').value;
-            const count = document.getElementById('orderCount').value;
+            const count = parseInt(document.getElementById('orderCount').value, 10) || 1;
 
-            fetch('/order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [header]: token
-                },
-                body: JSON.stringify({ itemId: itemId, count: count })
-            })
-            .then(res => {
-                if (res.ok) {
-                    alert('주문이 성공적으로 접수되었습니다.');
-                    location.href = '/orders';
-                } else if (res.status === 401) {
-                    alert('로그인이 필요한 서비스입니다.');
-                    location.href = '/members/login';
-                } else {
-                    res.text().then(msg => alert(msg || '주문 처리에 실패하였습니다.'));
-                }
-            })
-            .catch(() => {
-                if (confirm('[안내] 주문이 접수되었습니다. 주문 내역 페이지로 이동하시겠습니까?')) {
-                    location.href = '/orders';
-                }
+            const confirmed = await Modal.confirm('선택하신 수량(' + count + '개)으로 즉시 주문을 진행하시겠습니까?', {
+                title: '즉시 주문 확인',
+                confirmText: '주문하기'
             });
+            if (!confirmed) return;
+
+            const triggerBtn = btn || document.getElementById('orderNowBtn');
+            const res = await Api.post('/order', { itemId: itemId, count: count }, triggerBtn);
+
+            if (res.success) {
+                Toast.success(res.message || '주문이 성공적으로 접수되었습니다.');
+                setTimeout(() => { location.href = '/orders'; }, 600);
+            } else {
+                Toast.error(res.message || '주문 처리에 실패하였습니다.');
+            }
         }
 
         // 초기 금액 계산 실행

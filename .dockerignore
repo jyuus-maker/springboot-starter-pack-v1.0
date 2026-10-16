@@ -1,0 +1,10 @@
+.git
+.gradle
+build
+out
+.idea
+*.log
+*.tmp
+node_modules
+.system_generated
+screenshots

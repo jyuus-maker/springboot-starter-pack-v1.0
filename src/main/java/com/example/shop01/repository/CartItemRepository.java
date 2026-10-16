@@ -42,6 +42,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     /**
      * 장바구니 페이지용 CartDetailDto 목록을 직접 프로젝션 조회
+     * 대표 이미지가 아직 없거나 누락된 상품도 목록에서 누락되지 않도록 LEFT JOIN 적용
      *
      * @param cartId 장바구니 ID
      * @return 장바구니 상세 DTO 리스트
@@ -49,9 +50,8 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Query("SELECT new com.example.shop01.dto.CartDetailDto(ci.id, i.itemName, i.price, ci.count, im.imgUrl) " +
            "FROM CartItem ci " +
            "JOIN ci.item i " +
-           "JOIN ItemImg im ON im.item.id = i.id " +
+           "LEFT JOIN ItemImg im ON im.item.id = i.id AND im.repImgYn = 'Y' " +
            "WHERE ci.cart.id = :cartId " +
-           "AND im.repImgYn = 'Y' " +
            "ORDER BY ci.id DESC")
     List<CartDetailDto> findCartDetailDtoList(@Param("cartId") Long cartId);
 

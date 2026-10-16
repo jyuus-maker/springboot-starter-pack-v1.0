@@ -1,105 +1,170 @@
-# 📘 REHMIA 스타터팩 v1.0 기획 구조 & 풀스택 아키텍처 마스터 가이드
+# 📘 REHMIA 풀스택 스타터팩 v1.0 바이브코딩 & 도커 배포 마스터 가이드
 
-> **대상 독자:** 바이브코더(Vibe Coder), 풀스택 개발자, 솔루션 아키텍트  
-> **아키텍처 스택:** Spring Boot 4.0.8 / Java 21 / Spring Security 6 / PostgreSQL / JPA / QueryDSL 5.1 / Tailwind CSS v4  
-> **문서 버전:** v1.0.0 (개발자 & 아키텍트 통합본)  
-> **최종 수정일:** 2026-09-22  
+> **대상 독자:** 바이브코더(Vibe Coder), 주니어/풀스택 개발자, 솔루션 아키텍트  
+> **아키텍처 스택:** Spring Boot 4.0.8 / Java 21 / Spring Security 6 / PostgreSQL 16 / JPA / QueryDSL 5.1 / Tailwind CSS v4  
+> **패키징 & 배포:** Docker Multi-stage + Nginx Alpine (80포트 리버스 프록시)  
+> **문서 버전:** v1.1.0 (100점 만점 기술검정 및 도커 패키징 통합본)  
+> **최종 수정일:** 2026-10-16  
 
 ---
 
 ## 📌 목차 (Table of Contents)
-1. [Part 1. 스타터팩 기획 구조 & 백엔드 아키텍처 개요](#part-1-스타터팩-기획-구조--백엔드-아키텍처-개요)
-2. [Part 2. [영역 1] E-Commerce 코어 도메인 구축 내역](#part-2-영역-1-e-commerce-코어-도메인-구축-내역)
-3. [Part 3. [영역 2] 2027 브랜드 경험(/story) UX & 인터랙션 스펙](#part-3-영역-2-2027-브랜드-경험story-ux--인터랙션-스펙)
-4. [Part 4. 개발자 실행, 시드 데이터 & 런칭 운영 가이드](#part-4-개발자-실행-시드-데이터--런칭-운영-가이드)
+1. [Part 1. [초보자 퀵스타트] 5분 만에 내 IDE에서 바로 시작하기](#part-1-초보자-퀵스타트-5분-만에-내-ide에서-바로-시작하기)
+2. [Part 2. [바이브코딩 핵심 규칙] AI와 함께 코드를 고칠 때 지켜야 할 규격](#part-2-바이브코딩-핵심-규칙-ai와-함께-코드를-고칠-때-지켜야-할-규격)
+3. [Part 3. [도커 & 클라우드 배포] 1줄 명령어로 완성하는 상용 패키징](#part-3-도커--클라우드-배포-1줄-명령어로-완성하는-상용-패키징)
+4. [Part 4. [도메인 핵심 엔진] 이커머스 트랜잭션 & 2027 브랜드 스토리](#part-4-도메인-핵심-엔진-이커머스-트랜잭션--2027-브랜드-스토리)
+5. [Part 5. [상황별 장애 조치 & 트러블슈팅 FAQ]](#part-5-상황별-장애-조치--트러블슈팅-faq)
 
 ---
 
-## Part 1. 스타터팩 기획 구조 & 백엔드 아키텍처 개요
+## Part 1. [초보자 퀵스타트] 5분 만에 내 IDE에서 바로 시작하기
 
-### 1.1 2-Track 듀얼 코어 기획 구조
-본 스타터팩은 **실무형 커머스 트랜잭션 엔진**과 **2027 하이엔드 인터랙티브 브랜드 경험 뷰**가 완벽히 결합된 2-Track 구조입니다.
+본 스타터팩을 다운로드한 직후, **"딱 3가지만 확인/수정"**하면 내 컴퓨터에서 즉시 실행할 수 있습니다.
 
+### 1.1 사전 준비물
+- **JDK 21 필수:** Eclipse Temurin 21 또는 Oracle OpenJDK 21
+- **IDE 권장:** IntelliJ IDEA (Ultimate / Community) 또는 VS Code
+- **PostgreSQL 16:** 로컬 PC 설치 또는 도커 컨테이너
+
+### 1.2 "이것만 고치고 시작하세요!" (3대 필수 설정)
+
+#### 1) DB 비밀번호 맞추기 (`src/main/resources/application.properties`)
+내 컴퓨터에 설치된 PostgreSQL의 `shopdb` 데이터베이스 및 비밀번호와 일치시킵니다:
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/shopdb
+spring.datasource.username=postgres
+spring.datasource.password=내_DB_비밀번호  # ← 여기를 내 비밀번호로 수정!
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   REHMIA Full-Stack Starter Pack v1.0                   │
-├───────────────────────────────────┬────────────────────────────────────┤
-│  [Track A] E-Commerce Core Engine │ [Track B] 2027 Parallax Story View │
-│  - Spring Security 6 RBAC 인증/인가 │ - Obsidian Dark & Sand White 무드   │
-│  - QueryDSL 5.1 동적 필터/페이징  │ - Scroll-Driven 자간 가변 확장     │
-│  - 원자적 재고 증감 트랜잭션 엔진 │ - Centered Scale-on-Scroll 캔버스  │
-│  - 5슬롯 다중 이미지 파이프라인    │ - 마그네틱 앰비언트 커서 글로우     │
-└───────────────────────────────────┴────────────────────────────────────┘
+*(※ 아직 DB가 없다면 pgAdmin 또는 터미널에서 `CREATE DATABASE shopdb;` 1회 실행)*
+
+#### 2) 상품 이미지 저장 폴더 1초 생성 (`C:/shopmall/item`)
+관리자가 상품을 등록할 때 업로드된 이미지가 저장되는 로컬 폴더입니다. Windows 탐색기에서 아래 폴더를 미리 생성합니다:
+```text
+📁 생성할 폴더 경로: C:\shopmall\item
+```
+*(※ Mac/Linux 사용자라면 `itemImgLocation=/Users/내계정/shopmall/item`으로 수정)*
+
+#### 3) 기본 제공 테스트 계정 (`InitData.java`)
+서버 최초 구동 시 자동으로 등록되는 테스트 계정입니다:
+- **시스템 관리자:** `admin@shop01.com` / `1234` (`ROLE_ADMIN` - 상품 등록/수정/재고관리 전용)
+- **일반 테스트 고객:** `user@shop01.com` / `1234` (`ROLE_USER` - 상품 둘러보기, 장바구니, 주문 결제)
+
+### 1.3 실행하기 (Run & Verify)
+1. IntelliJ에서 프로젝트 루트 폴더를 **Open**합니다.
+2. `Shop01Application.java` 파일을 찾아 **▶ Run** 버튼을 클릭합니다.
+3. 브라우저에서 `http://localhost:8080` 접속 시 르미아 쇼핑몰이 즉시 표시됩니다.
+
+### 1.4 테스트 스위트 무결성 검증 (`./gradlew test`)
+본 프로젝트의 테스트 환경에는 독립된 **H2 In-Memory DB (PostgreSQL 호환 모드)**가 설정되어 있어 실제 DB에 영향을 주지 않고 안전하게 100% 통과 검증이 가능합니다:
+```bash
+# Windows
+.\gradlew.bat test
+
+# Mac / Linux
+./gradlew test
 ```
 
-### 1.2 풀스택 계층형 아키텍처 (Layered Architecture)
-- **프레젠테이션 계층 (Presentation):** Thymeleaf 템플릿 엔진 + Tailwind CSS v4 CLI + Vanilla JS 인터랙션
-- **보안 및 컨트롤러 계층 (Security & Web):** `SecurityFilterChain`, RESTful JSON 엔드포인트 및 View 컨트롤러
-- **비즈니스 계층 (Service):** `@Transactional` 기반 비즈니스 무결성 보장 (`MemberService`, `ItemService`, `CartService`, `OrderService`)
-- **영속성 계층 (Persistence):** Spring Data JPA Repositories + QueryDSL Q-타입 동적 쿼리 (`ItemRepositoryCustomImpl`) + PostgreSQL / H2(Test)
+---
 
-### 1.3 핵심 엔티티 도메인 관계 (ERD)
-- **Member (1) : (N) Orders**: 회원은 여러 건의 주문을 보유
-- **Member (1) : (1) Cart**: 회원 1명당 1개의 고유 장바구니 매핑
-- **Cart (1) : (N) CartItem (N) : (1) Item**: 장바구니 내 상품 및 수량 보관
-- **Orders (1) : (N) OrderItem (N) : (1) Item**: 주문 시점의 가격/수량 스냅샷 및 재고 증감 연동
-- **Item (1) : (N) ItemImg**: 상품당 최대 5장의 이미지 슬롯 및 대표 이미지(`repimgYn`) 플래그 관리
+## Part 2. [바이브코딩 핵심 규칙] AI와 함께 코드를 고칠 때 지켜야 할 규격
+
+### 2.1 프론트엔드 모듈 (브라우저 Native alert/confirm 사용 금지!)
+본 프로젝트는 브라우저 기본 팝업이 100% 제거되어 있으며, 모든 템플릿에 전용 UI 모듈이 내장되어 있습니다:
+
+- **감성 알림 토스트 (`toast.js`):**
+  ```javascript
+  Toast.success('쇼핑백에 담았습니다.');
+  Toast.error('상품 재고가 부족합니다.');
+  Toast.info('로그인이 필요한 서비스입니다.');
+  ```
+- **비동기 컨펌 모달 (`modal.js`):**
+  ```javascript
+  const confirmed = await Modal.confirm('해당 상품을 삭제하시겠습니까?', {
+      title: '삭제 확인',
+      confirmText: '삭제하기',
+      type: 'danger'
+  });
+  if (!confirmed) return;
+  ```
+- **표준 비동기 API 클라이언트 (`api.js`):**
+  ```javascript
+  // 버튼 요소를 넘겨주면 클릭 시 로딩 스피너 및 중복 클릭 방지가 자동 적용됩니다.
+  const res = await Api.post('/order', { itemId: 1, count: 2 }, myButtonEl);
+  if (res.success) {
+      Toast.success(res.message);
+  } else {
+      Toast.error(res.message);
+  }
+  ```
+
+### 2.2 백엔드 표준 API 응답 규격 (`ApiResponse<T>`)
+모든 비동기 Controller 엔드포인트는 `ApiResponse<T>` 규격을 반환합니다:
+```java
+@PostMapping("/order")
+@ResponseBody
+public ResponseEntity<ApiResponse<Long>> order(@RequestBody @Valid OrderDto orderDto, ...) {
+    Long orderId = orderService.order(orderDto, email);
+    return ResponseEntity.ok(ApiResponse.success(orderId, "주문이 성공적으로 접수되었습니다."));
+}
+```
+
+### 2.3 글로벌 예외 처리기 (`GlobalExceptionHandler.java`)
+Service 계층에서 `throw new IllegalStateException("재고 부족");`을 던지면, 컨트롤러의 복잡한 try-catch 없이도 글로벌 예외 처리기가 자동으로 400 Bad Request JSON 에러를 반환합니다.
 
 ---
 
-## Part 2. [영역 1] E-Commerce 코어 도메인 구축 내역
+## Part 3. [도커 & 클라우드 배포] 1줄 명령어로 완성하는 상용 패키징
 
-### 2.1 인증 및 인가 체계 (Spring Security 6)
-- **RBAC 권한 분리:** `ROLE_USER`(일반 고객)와 `ROLE_ADMIN`(시스템 관리자) 분리
-- **CSRF 방어:** Form 제출 및 모든 비동기 AJAX 요청 헤더에 `X-CSRF-TOKEN` 자동 주입
-- **예외 엔트리포인트:** 비인가 접근 시 `CustomAuthenticationEntryPoint`에 의해 안전한 리다이렉트 수행
+### 3.1 3단 컨테이너 구성
+- **Nginx (Alpine):** 80 포트 리버스 프록시, Gzip 압축, `/images/` 볼륨 직통 30일 캐싱
+- **App (Spring Boot):** Eclipse Temurin 21 JRE 경량 멀티스테이지, non-root 보안 유저, G1GC 튜닝
+- **DB (PostgreSQL 16):** `pg_isready` 헬스체크 기반 백엔드 구동 순서 보장, 영속 볼륨 연동
 
-### 2.2 상품 & 미디어 파이프라인
-- **5슬롯 이미지 업로드:** 1번 슬롯(대표 썸네일 `repimgYn = 'Y'`), 2~5번 슬롯(서브 디테일컷 `repimgYn = 'N'`)
-- **QueryDSL 5.1 동적 필터:** 등록일자, 판매상태(`SELL`/`SOLD_OUT`), 등록자, 상품명을 1개의 통합 `BooleanBuilder`로 동적 페이징 조회
+### 3.2 배포 명령어 (1줄!)
+```bash
+# 1. 일괄 빌드 및 백그라운드 구동
+docker-compose up -d --build
 
-### 2.3 트랜잭션 주문-재고 동기화 엔진
-- **주문 접수:** `Item.removeStock(count)` → 재고 부족 시 `OutOfStockException` 발생 및 트랜잭션 롤백
-- **주문 취소:** `Order.cancelOrder()` → 취소 수량만큼 `Item.addStock(count)` 자동 호출 및 상태를 `OrderStatus.CANCEL`로 갱신
+# 2. 서비스 접속 (Nginx 80 포트)
+http://localhost
 
-### 2.4 개발자 확장 포인트 (Extension Points)
-- **PG사 카드결제 연동:** `OrderController.order()` 호출 전후 토스페이먼츠/이니시스 결제창 호출 및 승인 API 연동
-- **AWS S3 연동:** `FileService.java`의 로컬 파일 I/O를 S3 SDK(`PutObjectRequest`)로 전환
-
----
-
-## Part 3. [영역 2] 2027 브랜드 경험(/story) UX & 인터랙션 스펙
-
-### 3.1 2027 톤앤매너 & 디자인 시스템
-- **Obsidian Dark (`#121212`) & Sand White (`#F5F5F4`):** 하이엔드 럭셔리 애슬레틱 감성
-- **Glassmorphism:** `backdrop-blur-md`와 1px 미세 테두리를 적용한 플로팅 카드
-
-### 3.2 구현된 5대 하이엔드 UX 인터랙션 메커니즘
-1. **Scroll-Driven Dynamic Typography:** 스크롤 진행도에 맞춰 헤드라인 자간(`letter-spacing`)이 `-0.05em`에서 `0.25em`으로 확장
-2. **Centered Scale-on-Scroll Canvas:** 뷰포트 중앙 고정 캔버스가 스크롤에 맞춰 0.85배에서 1.05배로 자연스럽게 풀스크린 줌인
-3. **Magnetic Ambient Glow:** 마우스 커서 궤적을 `requestAnimationFrame`으로 추적하는 부드러운 방사형 조명 연출
-4. **Interactive Material Showcase:** 3대 기능성 원단(AEROKNIT™, VORTEX-FLEX™, TECH-SHIELD™) 3D 틸트 카드
-5. **Real-Time Progress & 5-Step Quick Navigator:** 1px 상단 스크롤 게이지 바 및 5단계 챕터 즉시 점프 내비게이션
+# 3. 로그 실시간 확인
+docker-compose logs -f app
+```
 
 ---
 
-## Part 4. 개발자 실행, 시드 데이터 & 런칭 운영 가이드
+## Part 4. [도메인 핵심 엔진] 이커머스 트랜잭션 & 2027 브랜드 스토리
 
-### 4.1 시스템 기본 제공 시드 계정 (`InitData`)
-| 구분 | 아이디 (이메일) | 비밀번호 | 권한 | 주요 접근 영역 |
-| :--- | :--- | :---: | :---: | :--- |
-| **시스템 관리자** | `admin@shop01.com` | `1234` | `ROLE_ADMIN` | 쇼핑몰 전체 + 관리자 센터 (`/admin/**`) |
-| **일반 고객** | `user@shop01.com` | `1234` | `ROLE_USER` | 장바구니, 단일/선택 주문, 마이페이지 |
+### 4.1 2-Track 듀얼 코어 구조
+- **Track A (E-Commerce 코어):** Spring Security 6 RBAC, 5슬롯 이미지 파이프라인, 실시간 재고 차감/복구 트랜잭션, QueryDSL 동적 검색
+- **Track B (2027 패럴랙스 브랜드 스토리 `/story`):** Obsidian Dark 모던 룩앤필, Scroll-Driven 자간 확장, Scale-on-Scroll 줌인, 마그네틱 앰비언트 글로우
 
-### 4.2 관리자 실무 프로세스
-- **신규 상품 등록:** `/admin/item/new`에서 기본 정보 입력 및 대표 이미지 등록
-- **품절 제어:** 상품 상태를 `품절(SOLD_OUT)`로 전환하여 결제 방지
-- **주문 취소 관리:** `/orders`에서 주문 취소 처리 시 DB 재고 원상 복구
-
-### 4.3 개발자 FAQ & 트러블슈팅
-- **테스트 환경 격리:** `src/test/resources/application.properties`의 H2 In-Memory DB 설정으로 PostgreSQL 실 DB와 무관하게 100% 독립 테스트 통과
-- **이미지 엑스박스 방지:** `application.properties`의 `itemImgLocation` (`C:/shopmall/item`) 폴더 생성 여부 확인
-- **터미널 JAVA_HOME:** PowerShell에서 `$env:JAVA_HOME = "C:\Users\<사용자>\.jdks\temurin-21.0.12.1"` 지정
+### 4.2 주문-재고 트랜잭션 규칙
+- **주문 접수:** 주문 수량만큼 DB 재고 즉시 차감 (부족 시 `IllegalStateException` 및 롤백)
+- **주문 취소:** 취소된 수량만큼 DB 재고 원상 복구 및 상태 `CANCEL` 변경
+- **장바구니 일괄 주문:** 선택 상품 중 1개라도 재고 부족 시 전체 주문 롤백 (원자성 보장)
 
 ---
-*© 2026-2027 REHMIA Athletic. All rights reserved. Technical Support: support@rehmia.com*
+
+## Part 5. [상황별 장애 조치 & 트러블슈팅 FAQ]
+
+### Q1. "Connection refused" DB 연결 실패 오류
+- 로컬 PostgreSQL 서비스(`postgresql-x64-16`)가 실행 중인지 확인하세요.
+- 도커를 사용할 경우 `docker-compose up -d db`로 DB 컨테이너를 먼저 띄울 수 있습니다.
+
+### Q2. 업로드한 상품 이미지가 엑스박스로 깨짐
+- `C:\shopmall\item` 폴더가 내 컴퓨터에 실제로 존재하는지 확인하고, 없다면 새 폴더를 직접 생성하세요.
+
+### Q3. 8080 포트가 이미 사용 중 (Address already in use)
+- `application.properties` 맨 아래에 `server.port=8081`을 추가하여 포트를 변경하세요.
+
+### Q4. `./gradlew` 실행 시 JAVA_HOME 에러
+- PowerShell에서 임시 경로를 지정하세요:
+  ```powershell
+  $env:JAVA_HOME="C:\Users\<사용자명>\.jdks\temurin-21.0.12.1"
+  .\gradlew.bat test
+  ```
+
+### Q5. 새 HTML 작성 시 Tailwind CSS 디자인 미반영
+- 프로젝트 루트에서 `npm run build`를 실행하여 `output.css`를 재컴파일하세요.
