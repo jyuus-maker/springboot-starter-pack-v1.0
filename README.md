@@ -59,7 +59,7 @@
 ## 📁 디렉토리 구조 (Directory Structure)
 
 ```text
-springboot-starter-pack-v1.0/
+springboot-starter-shoppack-v1.0/
 ├── .github/                      # CI/CD 및 저장소 설정
 ├── gradle/                       # Gradle Wrapper 설정
 ├── src/

@@ -1,7 +1,7 @@
 {
-  "name": "springboot-starter-pack-v1.0",
+  "name": "springboot-starter-shoppack-v1.0",
   "version": "1.0.0",
-  "description": "springboot-starter-pack-v1.0 frontend tailwind configuration",
+  "description": "springboot-starter-shoppack-v1.0 frontend tailwind configuration",
   "scripts": {
     "build": "tailwindcss -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/output.css --minify",
     "watch": "tailwindcss -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/output.css --watch",
