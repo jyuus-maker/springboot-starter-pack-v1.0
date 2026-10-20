@@ -9,12 +9,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 /**
  * [Spring Security 핵심 보안 설정 클래스]
  *
- * Spring Boot 3.x / Spring Security 6.x 표준 방식을 따르며,
+ * Spring Boot 4.x / Spring Security 7.x 표준 방식을 따르며,
  * 웹 애플리케이션의 인증(Authentication), 인가(Authorization), 로그인/로그아웃,
  * 정적 리소스 보안, 예외 처리 등의 보안 규칙을 빈(Bean)으로 등록하여 통합 관리합니다.
  */
@@ -69,6 +70,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // Resolve the deferred CSRF token before rendering can commit the response.
+                .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
                 // ==============================================================================
                 // 1. URL별 접근 권한(인가, Authorization) 설정
                 // ==============================================================================
